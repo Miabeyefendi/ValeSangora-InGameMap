@@ -25,7 +25,7 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[English](./CHANGELOG.md) · [README](./README.md)
+[English](./CHANGELOG.md) · [README](./README.md) · [Tutorial](./TUTORIAL.md)
 
 ---
 

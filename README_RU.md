@@ -17,19 +17,19 @@
 
 [English](./README.md) · [Türkçe](./README_TR.md) · [Español](./README_ES.md) · [简体中文](./README_ZH.md) · **Русский**
 
-[Установка](#-установка) · [Возможности](#-главное) · [Использование](#-быстрый-старт) · [Изменения](./CHANGELOG.md)
+[Установка](#-установка) · [Возможности](#-главное) · [Использование](#-быстрый-старт) · [Руководство](./TUTORIAL_RU.md) · [Изменения](./CHANGELOG.md)
 
 <a href="https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest">
   <img src="./assets/btn-download.svg" height="52" alt="Скачать последнюю версию">
 </a>
-<a href="#-быстрый-старт">
+<a href="./TUTORIAL_RU.md">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-quick-start-dark.svg">
-    <img src="./assets/btn-quick-start.svg" height="52" alt="Быстрый старт">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-tutorial-dark.svg">
+    <img src="./assets/btn-tutorial.svg" height="52" alt="Читать руководство">
   </picture>
 </a>
 
-<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Экран карты игры: сотни круглых меток категорий по всей Vale Sangora и панель фильтров мода слева">
+<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Vale Sangora In-Game Map: экран карты игры с множеством круглых меток категорий, панель фильтров мода слева и подписи фильтр по категориям, клик для отметки, бледные или скрытые выполненные">
 
 </div>
 
@@ -80,6 +80,15 @@
 ```
 Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 ```
+
+<details>
+<summary><b>Что внутри zip релиза</b></summary>
+
+`ValeSangoraMap-1.0.0.zip` это папка `src\ValeSangoraMap` этого репозитория в zip, без добавлений: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` и 95 значков PNG. Исполняемых файлов нет.
+
+SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+
+</details>
 
 <details>
 <summary><b>Установка из этого репозитория</b></summary>
@@ -157,10 +166,13 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 | Finished markers | Faded (бледные), Hidden (скрытые), при Show = All |
 | Icon size | + / - с шагом 5%, от 50% до 200% |
 
+Каждый ключ описан в [руководстве](./TUTORIAL_RU.md#️-справочник-настроек).
+
 ---
 
 ## 📖 Документация
 
+- [**Руководство**](./TUTORIAL_RU.md) - каждая возможность и каждая настройка подробно
 - [**Изменения**](./CHANGELOG.md) - что изменилось в каждой версии
 - [**Участие**](./CONTRIBUTING.md) - как отправить изменение
 - [**Безопасность**](./SECURITY.md) - как сообщить об уязвимости приватно

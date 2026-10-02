@@ -7,6 +7,6 @@ contact_links:
   - name: Question or idea
     url: https://github.com/Miabeyefendi/ValeSangora-InGameMap/discussions
     about: For usage questions and open-ended ideas, start a discussion instead.
-  - name: Read the README first
-    url: https://github.com/Miabeyefendi/ValeSangora-InGameMap#-faq
-    about: Installation, every button and the common problems are explained there.
+  - name: Read the tutorial first
+    url: https://github.com/Miabeyefendi/ValeSangora-InGameMap/blob/main/TUTORIAL.md
+    about: Every feature and every setting is documented there.

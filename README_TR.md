@@ -17,19 +17,19 @@
 
 [English](./README.md) · **Türkçe** · [Español](./README_ES.md) · [简体中文](./README_ZH.md) · [Русский](./README_RU.md)
 
-[Kurulum](#-kurulum) · [Özellikler](#-öne-çıkanlar) · [Kullanım](#-hızlı-başlangıç) · [Değişiklikler](./CHANGELOG.md)
+[Kurulum](#-kurulum) · [Özellikler](#-öne-çıkanlar) · [Kullanım](#-hızlı-başlangıç) · [Rehber](./TUTORIAL_TR.md) · [Değişiklikler](./CHANGELOG.md)
 
 <a href="https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest">
   <img src="./assets/btn-download.svg" height="52" alt="Son sürümü indir">
 </a>
-<a href="#-hızlı-başlangıç">
+<a href="./TUTORIAL_TR.md">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-quick-start-dark.svg">
-    <img src="./assets/btn-quick-start.svg" height="52" alt="Hızlı başlangıç">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-tutorial-dark.svg">
+    <img src="./assets/btn-tutorial.svg" height="52" alt="Rehberi oku">
   </picture>
 </a>
 
-<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Oyunun harita ekranı: Vale Sangora üzerinde yüzlerce yuvarlak kategori işareti, solda modun filtre paneli">
+<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Vale Sangora In-Game Map: yuvarlak kategori işaretleriyle dolu oyun haritası, solda modun filtre paneli ve altta kategoriye göre filtrele, tıkla tamamla, bitenleri soluklaştır ya da gizle yazıları">
 
 </div>
 
@@ -80,6 +80,15 @@ Doğru olduğunda bu dosya vardır:
 ```
 Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 ```
+
+<details>
+<summary><b>Sürüm zip dosyasında ne var</b></summary>
+
+`ValeSangoraMap-1.0.0.zip`, bu deponun `src\ValeSangoraMap` klasörünün zip hali, eklenen bir şey yok: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` ve 95 PNG ikon. Çalıştırılabilir dosya yok.
+
+SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+
+</details>
 
 <details>
 <summary><b>Bunun yerine bu depodan kur</b></summary>
@@ -157,10 +166,13 @@ Her şey harita ekranındaki panelden ayarlanır. Mod bunları yanındaki metin 
 | Finished markers | Faded (soluk), Hidden (gizli), Show All iken |
 | Icon size | %5 adımla + / -, %50 ile %200 arası |
 
+Her anahtar [rehberde](./TUTORIAL_TR.md#️-yapılandırma-referansı) açıklanıyor.
+
 ---
 
 ## 📖 Belgeler
 
+- [**Rehber**](./TUTORIAL_TR.md) - her özellik, her ayar, ayrıntısıyla
 - [**Değişiklikler**](./CHANGELOG.md) - her sürümde ne değişti
 - [**Katkıda bulunma**](./CONTRIBUTING.md) - değişiklik nasıl gönderilir
 - [**Güvenlik**](./SECURITY.md) - açık nasıl gizlice bildirilir

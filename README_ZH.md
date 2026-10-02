@@ -17,19 +17,19 @@
 
 [English](./README.md) · [Türkçe](./README_TR.md) · [Español](./README_ES.md) · **简体中文** · [Русский](./README_RU.md)
 
-[安装](#-安装) · [功能](#-亮点) · [用法](#-快速开始) · [更新日志](./CHANGELOG.md)
+[安装](#-安装) · [功能](#-亮点) · [用法](#-快速开始) · [教程](./TUTORIAL_ZH.md) · [更新日志](./CHANGELOG.md)
 
 <a href="https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest">
   <img src="./assets/btn-download.svg" height="52" alt="下载最新版本">
 </a>
-<a href="#-快速开始">
+<a href="./TUTORIAL_ZH.md">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-quick-start-dark.svg">
-    <img src="./assets/btn-quick-start.svg" height="52" alt="快速开始">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-tutorial-dark.svg">
+    <img src="./assets/btn-tutorial.svg" height="52" alt="阅读教程">
   </picture>
 </a>
 
-<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="游戏的地图界面：Vale Sangora 上分布着数百个圆形分类标记，左侧是模组的筛选面板">
+<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Vale Sangora In-Game Map：布满圆形分类标记的游戏地图界面，左侧是模组的筛选面板，下方写着按分类筛选、点击标记完成、已完成的变淡或隐藏">
 
 </div>
 
@@ -80,6 +80,15 @@
 ```
 Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 ```
+
+<details>
+<summary><b>发布 zip 里有什么</b></summary>
+
+`ValeSangoraMap-1.0.0.zip` 就是本仓库 `src\ValeSangoraMap` 文件夹的压缩包，没有额外内容：`enabled.txt`、`Scripts\main.lua`、`Data\markers.txt` 和 95 个 PNG 图标。没有可执行文件。
+
+SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+
+</details>
 
 <details>
 <summary><b>改为从本仓库安装</b></summary>
@@ -157,10 +166,13 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 | Finished markers | Faded（变淡）、Hidden（隐藏），在 Show 为 All 时生效 |
 | Icon size | + / -，每次 5%，范围 50% 到 200% |
 
+每个键的说明见[教程](./TUTORIAL_ZH.md#️-配置参考)。
+
 ---
 
 ## 📖 文档
 
+- [**教程**](./TUTORIAL_ZH.md) - 每个功能、每项设置的完整说明
 - [**更新日志**](./CHANGELOG.md) - 每个版本的改动
 - [**参与贡献**](./CONTRIBUTING.md) - 如何提交改动
 - [**安全**](./SECURITY.md) - 如何私下报告漏洞

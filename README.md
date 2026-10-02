@@ -17,19 +17,19 @@
 
 **English** · [Türkçe](./README_TR.md) · [Español](./README_ES.md) · [简体中文](./README_ZH.md) · [Русский](./README_RU.md)
 
-[Install](#-installation) · [Features](#-highlights) · [Usage](#-quick-start) · [Changelog](./CHANGELOG.md)
+[Install](#-installation) · [Features](#-highlights) · [Usage](#-quick-start) · [Tutorial](./TUTORIAL.md) · [Changelog](./CHANGELOG.md)
 
 <a href="https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest">
   <img src="./assets/btn-download.svg" height="52" alt="Download the latest release">
 </a>
-<a href="#-quick-start">
+<a href="./TUTORIAL.md">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-quick-start-dark.svg">
-    <img src="./assets/btn-quick-start.svg" height="52" alt="Quick start">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-tutorial-dark.svg">
+    <img src="./assets/btn-tutorial.svg" height="52" alt="Read the tutorial">
   </picture>
 </a>
 
-<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="The game's map screen with hundreds of round category markers spread over Vale Sangora and the mod's filter panel on the left">
+<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Vale Sangora In-Game Map: the game's map screen full of round category markers, the mod's filter panel on the left, and the lines Filter by category, Click to mark done, Fade or hide finished">
 
 </div>
 
@@ -80,6 +80,15 @@ When it is right, this file exists:
 ```
 Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 ```
+
+<details>
+<summary><b>What is in the release zip</b></summary>
+
+`ValeSangoraMap-1.0.0.zip` is the `src\ValeSangoraMap` folder of this repository, zipped, nothing added: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` and 95 PNG icons. No executable file.
+
+SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+
+</details>
 
 <details>
 <summary><b>Install from this repository instead</b></summary>
@@ -157,10 +166,13 @@ Everything is set from the panel on the map screen. The mod keeps it in text fil
 | Finished markers | Faded, Hidden (with Show set to All) |
 | Icon size | + / - in 5% steps, 50% to 200% |
 
+Every key is explained in the [tutorial](./TUTORIAL.md#️-configuration-reference).
+
 ---
 
 ## 📖 Documentation
 
+- [**Tutorial**](./TUTORIAL.md) - every feature, every setting, explained in full
 - [**Changelog**](./CHANGELOG.md) - what changed in each release
 - [**Contributing**](./CONTRIBUTING.md) - how to send a change
 - [**Security**](./SECURITY.md) - how to report a vulnerability privately

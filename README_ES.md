@@ -17,19 +17,19 @@
 
 [English](./README.md) · [Türkçe](./README_TR.md) · **Español** · [简体中文](./README_ZH.md) · [Русский](./README_RU.md)
 
-[Instalación](#-instalación) · [Funciones](#-lo-destacado) · [Uso](#-inicio-rápido) · [Cambios](./CHANGELOG.md)
+[Instalación](#-instalación) · [Funciones](#-lo-destacado) · [Uso](#-inicio-rápido) · [Guía](./TUTORIAL_ES.md) · [Cambios](./CHANGELOG.md)
 
 <a href="https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest">
   <img src="./assets/btn-download.svg" height="52" alt="Descargar la última versión">
 </a>
-<a href="#-inicio-rápido">
+<a href="./TUTORIAL_ES.md">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-quick-start-dark.svg">
-    <img src="./assets/btn-quick-start.svg" height="52" alt="Inicio rápido">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/btn-tutorial-dark.svg">
+    <img src="./assets/btn-tutorial.svg" height="52" alt="Leer la guía">
   </picture>
 </a>
 
-<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="La pantalla del mapa del juego con cientos de marcadores redondos de categorías sobre Vale Sangora y el panel de filtros del mod a la izquierda">
+<img src="./design/screenshots/main-showcase.jpg" width="92%" alt="Vale Sangora In-Game Map: la pantalla del mapa del juego llena de marcadores redondos de categorías, el panel de filtros del mod a la izquierda y las frases filtrar por categoría, clic para marcar como hecho, atenuar u ocultar lo terminado">
 
 </div>
 
@@ -80,6 +80,15 @@ Si está bien, este archivo existe:
 ```
 Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 ```
+
+<details>
+<summary><b>Qué contiene el zip de la versión</b></summary>
+
+`ValeSangoraMap-1.0.0.zip` es la carpeta `src\ValeSangoraMap` de este repositorio comprimida, sin nada añadido: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` y 95 iconos PNG. Ningún archivo ejecutable.
+
+SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+
+</details>
 
 <details>
 <summary><b>Instalar desde este repositorio</b></summary>
@@ -157,10 +166,13 @@ Todo se ajusta desde el panel de la pantalla del mapa. El mod lo guarda en archi
 | Finished markers | Faded (atenuados), Hidden (ocultos), con Show en All |
 | Icon size | + / - en pasos del 5%, del 50% al 200% |
 
+Cada clave se explica en la [guía](./TUTORIAL_ES.md#️-referencia-de-configuración).
+
 ---
 
 ## 📖 Documentación
 
+- [**Guía**](./TUTORIAL_ES.md) - cada función y cada ajuste, explicados a fondo
 - [**Cambios**](./CHANGELOG.md) - qué cambió en cada versión
 - [**Contribuir**](./CONTRIBUTING.md) - cómo enviar un cambio
 - [**Seguridad**](./SECURITY.md) - cómo informar de una vulnerabilidad en privado
