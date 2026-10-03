@@ -105,7 +105,7 @@ do
         end
         f:close()
     end
-    note(string.format("loaded %d categories, %d markers", #catOrder, #markers))
+    note(string.format("version 1.0.1, loaded %d categories, %d markers", #catOrder, #markers))
 end
 
 -- Progress: ids of markers marked done, one per line (Mods\ValeSangoraMap\progress.txt)
@@ -856,36 +856,17 @@ local function tick()
     if not ok then countError("hover", err) end
 end
 
--- The map widget's own refresh runs every frame it moves; following it there removes the lag.
--- Registered only once the map is first opened in a save, never while the game or the mods load
--- (a native hook registered during a mod reload froze the game once).
-local hooksDone = false
-local function registerHooks()
-    hooksDone = true
-    local hooked = {}
-    for _, fn in ipairs({ "/Script/DogwoodUI.MapWidget:RefreshLabelPositions", "/Script/DogwoodUI.MapWidget:Zoom" }) do
-        local ok = pcall(function()
-            RegisterHook(fn, function(ctx)
-                pcall(function()
-                    if not (L.layer and L.map and L.mapAddr) then return end
-                    local w = ctx:get()
-                    if not (w and w:IsValid() and addrOf(w) == L.mapAddr) then return end
-                    if not (L.layer:IsValid() and w:IsActivated()) then return end
-                    followZoom()
-                end)
-            end)
-        end)
-        hooked[#hooked + 1] = fn:match(":(.+)$") .. "=" .. tostring(ok)
-    end
-    -- a save load restarts the player controller: drop the map state there as well
-    local okR = pcall(function()
-        RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
-            pcall(forget, "player restart (save load)")
-        end)
+-- No hooks on the map widget (1.0.1): hooks registered while playing, from inside the update loop,
+-- could lose their callback reference in UE4SS ("Ref was not function") and stop the mod.
+-- The update loop follows the zoom itself. The one engine hook left is registered here, while the
+-- mod loads, which is the normal place for it: a save load restarts the player controller, so the
+-- old map state is dropped there.
+local okRestart = pcall(function()
+    RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
+        pcall(forget, "player restart (save load)")
     end)
-    hooked[#hooked + 1] = "ClientRestart=" .. tostring(okR)
-    note("hooks " .. table.concat(hooked, " "))
-end
+end)
+note("restart hook " .. (okRestart and "on" or "not available"))
 
 -- Level loads (UE4SS built-in, no engine hook needed): drop the map state before the old world goes
 local okMap = pcall(function()
@@ -926,15 +907,15 @@ local function clickStep()
 end
 
 -- One queued game-thread job at a time: if a frame is slow the jobs must not pile up.
+-- 33 ms (1.0.0 used 16 ms): half as many calls into the game thread.
 local queued = false
-LoopAsync(16, function()
+LoopAsync(33, function()
     if queued then return false end
     queued = true
     ExecuteInGameThread(function()
         local ok, err = pcall(function()
             tick()
             if L.layer and L.map and isOpen(L.map) then clickStep() else clickWanted = nil end
-            if not hooksDone and L.layer then registerHooks() end
         end)
         if not ok then countError("tick", err) end
         queued = false
