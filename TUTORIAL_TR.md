@@ -192,8 +192,9 @@ saniye sürer (kare başına 60 işaret). Yakınlaştırma sadece katman ölçe�
 
 **Ne yapar.** Farenin altındaki işaretin adını ve kategorisini gösterir.
 
-**Nasıl çalışır.** Üzerine gelinen ikonu oyunun arayüz sistemi bildirir. Mod yeni bir işaret
-için kare başına 150 ikona, üzerinde durulana her kare bakar.
+**Nasıl çalışır.** Üzerine gelinen ikonu oyunun arayüz sistemi bildirir. Fare ya da harita hareket
+ederken mod, üzerine gelineni bulana kadar kare başına 150 ikona bakar. Hiçbir şey
+hareket etmiyorsa hiç iş yapmaz.
 
 **Nasıl kullanılır.** Bir işaretin üstüne gel.
 

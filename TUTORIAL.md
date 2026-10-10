@@ -194,8 +194,9 @@ half a second (60 markers per frame). Zoom changes only the layer scale.
 
 **What it does.** Shows the name and category of the marker under the mouse.
 
-**How it works.** The game's UI system reports the hovered icon. The mod checks 150 icons per
-frame for a new hover and the hovered one every frame.
+**How it works.** The game's UI system reports the hovered icon. While the mouse or the map moves,
+the mod checks 150 icons per frame until it finds the hovered one. While nothing moves, it
+does no work at all.
 
 **How to use it.** Point at a marker.
 

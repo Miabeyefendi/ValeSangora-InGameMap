@@ -198,8 +198,9 @@ escala de la capa.
 
 **Qué hace.** Muestra el nombre y la categoría del marcador bajo el ratón.
 
-**Cómo funciona.** El sistema de interfaz del juego indica el icono bajo el ratón. El mod revisa
-150 iconos por fotograma buscando uno nuevo, y el actual en cada fotograma.
+**Cómo funciona.** El sistema de interfaz del juego indica el icono bajo el ratón. Mientras el ratón o el mapa se mueven, el mod revisa
+150 iconos por fotograma hasta encontrar el que está bajo el ratón. Si nada se mueve, no
+hace ningún trabajo.
 
 **Cómo se usa.** Apunta a un marcador.
 
