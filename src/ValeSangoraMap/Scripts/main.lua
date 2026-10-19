@@ -17,8 +17,9 @@ local function iconUnits()
     return (iconBase or ICON_FALLBACK) * iconScale
 end
 local DONE_OPACITY = 0.3
+local ALIGN_CENTER = { X = 0.5, Y = 0.5 }
 local BUILD_PER_TICK = 60     -- widgets created per tick while the layer is (re)built (1799 in ~0.5 s, no hitch)
-local RESIZE_PER_TICK = 300   -- icons resized per tick after a zoom change
+local RESIZE_PER_TICK = 500   -- icons resized per tick after a zoom change
 local LOG_FILE = MOD .. "\\vsm.log"
 
 local function log(s) print("[ValeSangoraMap] " .. s .. "\n") end
@@ -78,7 +79,7 @@ local function countError(where, err)
     end
 end
 if safeMode then BUILD_PER_TICK = 25 end
-local APPLY_PER_TICK = safeMode and 100 or 300
+local APPLY_PER_TICK = safeMode and 100 or 500
 local CLICK_GAP = safeMode and 0.5 or 0.2
 
 -- ---------------------------------------------------------------------------------------------
@@ -139,16 +140,26 @@ local function isOpen(w)
 end
 
 -- After a save load an old WBP_Map_C can linger until GC: keep the one that is on screen.
--- FindAllOf walks the whole object array, so the list of map widgets is refreshed only every 5 s;
--- each tick just asks those one or two widgets whether they are on screen.
-local mapList, mapListAt = {}, 0
+-- The map widget is created when the map opens. NotifyOnNewObject adds it once and the cache
+-- is reused from then on; FindAllOf would walk the whole object array every 5 s even while the
+-- map is closed, which showed up as a regular hitch.
+local mapList = {}
+local function rememberMap(w)
+    if w == nil then return end
+    local okName, name = pcall(function() return w:GetName() end)
+    if okName and name and name:sub(1, 9) == "Default__" then return end
+    mapList[#mapList + 1] = w
+    note("map widget seen")
+end
+local okN, nErr = pcall(function()
+    NotifyOnNewObject("/Game/_Dawnwalker/UI/_Unified/GameHub/Map/WBP_Map.WBP_Map_C", rememberMap)
+end)
+note("map watcher " .. (okN and "on" or ("not available: " .. tostring(nErr))))
 local function openMap()
-    if os.clock() >= mapListAt then
-        mapListAt = os.clock() + 5
-        mapList = {}
-        for _, w in ipairs(FindAllOf("WBP_Map_C") or {}) do
-            if w:IsValid() then mapList[#mapList + 1] = w end
-        end
+    for i = #mapList, 1, -1 do
+        local w = mapList[i]
+        local ok, valid = pcall(function() return w:IsValid() end)
+        if not ok or not valid then table.remove(mapList, i) end
     end
     for _, w in ipairs(mapList) do
         if isOpen(w) then return w end
@@ -196,6 +207,7 @@ end
 local L = {
     map = nil, layer = nil, z0 = nil, affine = nil, serial = 0,
     built = 0, items = {}, zoom = nil, sizeZoom = nil, settleAt = nil, resizeAt = 1,
+    attached = false, attachCheckAt = 0,
 }
 
 local function attached()
@@ -204,6 +216,16 @@ local function attached()
         return L.layer:IsValid() and L.layer:GetParent():GetFullName() == L.map:GetMappinContainer():GetFullName()
     end)
     return ok and same
+end
+
+-- The layer is attached once in startLayer. That relationship only changes when the map
+-- or its widget tree is rebuilt, so check it once a second instead of every tick.
+local function layerAttached()
+    if L.attached and os.clock() < L.attachCheckAt then return true end
+    local ok = attached()
+    L.attached = ok
+    L.attachCheckAt = os.clock() + 1.0
+    return ok
 end
 
 -- world -> map position at zoom z0, as an affine fitted on three WorldToMapPosition samples
@@ -221,6 +243,7 @@ local function startLayer(map)
     for k in pairs(textures) do textures[k] = nil end
     L.serial = L.serial + 1
     L.map, L.mapAddr, L.items, L.built, L.resizeAt = map, addrOf(map), {}, 0, 1
+    L.attached = false
     L.z0 = map:GetCurrentZoom()
     L.zoom, L.sizeZoom = L.z0, L.z0
     L.affine = fitAffine(map)
@@ -239,6 +262,7 @@ local function startLayer(map)
     L.layer:SetVisibility(4)                       -- SelfHitTestInvisible: only the icons are hit-tested
     L.layer:SetRenderTransformPivot({ X = 0, Y = 0 })
     L.hover, L.tip, L.panel, L.scanAt = nil, nil, nil, 1
+    L.attached, L.attachCheckAt = true, os.clock() + 1.0
     note(string.format("layer created at zoom %.3f, building %d markers", L.z0, #markers))
 end
 
@@ -292,16 +316,34 @@ local function shown(it)
     return true
 end
 
+local function applyItemVisual(img, visibility, opacity)
+    img:SetVisibility(visibility)
+    img:SetRenderOpacity(opacity)
+end
+
 function applyItem(it)
     local isDone = done[it.m.id]
     local show = shown(it)
-    pcall(function()
-        it.img:SetVisibility(show and 0 or 1)
-        it.img:SetRenderOpacity((isDone and doneMode == "all") and DONE_OPACITY or 1)
-    end)
+    pcall(applyItemVisual, it.img, show and 0 or 1,
+        (isDone and doneMode == "all") and DONE_OPACITY or 1)
 end
 local function applyAll()
     for i = 1, L.built do if L.items[i] then applyItem(L.items[i]) end end
+end
+
+local function buildOne(m, index)
+    local img = construct("/Script/UMG.Image", L.map.WidgetTree, "VSM_M" .. L.serial .. "_" .. index)
+    local tex = texture(m.cat)
+    if tex then img:SetBrushFromTexture(tex, false) end
+    local slot = L.layer:AddChildToCanvas(img)
+    local a = L.affine
+    local lx, ly = a.a * m.x + a.b * m.y + a.c, a.d * m.x + a.e * m.y + a.f
+    slot:SetAlignment(ALIGN_CENTER)
+    slot:SetPosition({ X = lx, Y = ly })
+    local s = iconUnits() * L.z0 / L.zoom
+    slot:SetSize({ X = s, Y = s })
+    L.items[index] = { img = img, slot = slot, lx = lx, ly = ly, m = m }
+    applyItem(L.items[index])
 end
 
 local function buildStep()
@@ -311,20 +353,7 @@ local function buildStep()
         L.built = L.built + 1
         n = n + 1
         local m = markers[L.built]
-        local ok, err = pcall(function()
-            local img = construct("/Script/UMG.Image", L.map.WidgetTree, "VSM_M" .. L.serial .. "_" .. L.built)
-            local tex = texture(m.cat)
-            if tex then img:SetBrushFromTexture(tex, false) end
-            local slot = L.layer:AddChildToCanvas(img)
-            local a = L.affine
-            local lx, ly = a.a * m.x + a.b * m.y + a.c, a.d * m.x + a.e * m.y + a.f
-            slot:SetAlignment({ X = 0.5, Y = 0.5 })
-            slot:SetPosition({ X = lx, Y = ly })
-            local s = iconUnits() * L.z0 / L.zoom
-            slot:SetSize({ X = s, Y = s })
-            L.items[L.built] = { img = img, slot = slot, lx = lx, ly = ly, m = m }
-            applyItem(L.items[L.built])
-        end)
+        local ok, err = pcall(buildOne, m, L.built)
         if not ok and L.built < 3 then note("marker build failed: " .. tostring(err)) end
     end
     if L.built >= #markers then
@@ -341,7 +370,7 @@ local function followZoom()
         L.zoom = z
         local s = z / L.z0
         L.layer:SetRenderScale({ X = s, Y = s })
-        L.settleAt = os.clock() + 0.3
+        L.settleAt = os.clock() + 0.2
     end
 end
 
@@ -385,10 +414,11 @@ local function resizeStep()
     if L.resizeAt == 1 then pcall(measurePins) end
     if L.sizeZoom == L.zoom then L.settleAt = nil return end
     local s = iconUnits() * L.z0 / L.zoom
+    local sz = { X = s, Y = s }
     local n = 0
     while L.resizeAt <= L.built and n < RESIZE_PER_TICK do
         local it = L.items[L.resizeAt]
-        if it then pcall(function() it.slot:SetSize({ X = s, Y = s }) end) end
+        if it then pcall(it.slot.SetSize, it.slot, sz) end
         L.resizeAt = L.resizeAt + 1
         n = n + 1
     end
@@ -446,7 +476,8 @@ local function ensureTip()
 end
 
 local function isHovered(it)
-    local ok, h = pcall(function() return it.img:IsHovered() end)
+    local img = it.img
+    local ok, h = pcall(img.IsHovered, img)
     return ok and h == true
 end
 
@@ -784,12 +815,12 @@ local function panelHover()
     local hot = nil
     for i = #L.hits, 1, -1 do          -- last added is on top
         local h = L.hits[i]
-        local ok, v = pcall(function() return h.img:IsHovered() end)
+        local ok, v = pcall(h.img.IsHovered, h.img)
         if ok and v then hot = h break end
     end
     if hot == L.hot then return end
-    if L.hot then pcall(function() L.hot.img:SetColorAndOpacity(L.hot.base) end) end
-    if hot then pcall(function() hot.img:SetColorAndOpacity(hot.hover) end) end
+    if L.hot then pcall(L.hot.img.SetColorAndOpacity, L.hot.img, L.hot.base) end
+    if hot then pcall(hot.img.SetColorAndOpacity, hot.img, hot.hover) end
     L.hot = hot
 end
 
@@ -799,9 +830,9 @@ local function clickPanel(right)
         local h = L.hits[i]
         local fn = right and h.rmb or (not right and h.action)
         local ok, v = false, false
-        if fn then ok, v = pcall(function() return h.img:IsHovered() end) end
+        if fn then ok, v = pcall(h.img.IsHovered, h.img) end
         if ok and v then
-            pcall(function() h.img:SetColorAndOpacity(C.press) end)
+            pcall(h.img.SetColorAndOpacity, h.img, C.press)
             L.hot = nil
             fn()
             L.panelDirty, L.flashUntil = true, os.clock() + 0.15
@@ -809,7 +840,8 @@ local function clickPanel(right)
         end
     end
     -- a click on the panel's background must not mark a marker under it
-    local ok, v = pcall(function() return L.panelBg and L.panelBg:IsHovered() end)
+    if not L.panelBg then return false end
+    local ok, v = pcall(L.panelBg.IsHovered, L.panelBg)
     return ok and v == true
 end
 
@@ -818,7 +850,8 @@ local function forget(why)
     L.map, L.mapAddr, L.layer, L.items, L.built = nil, nil, nil, {}, 0
     L.hover, L.tip, L.panel, L.hits, L.hot, L.pending, L.panelBg = nil, nil, nil, nil, nil, nil, nil
     L.applyAt, L.settleAt = nil, nil
-    mapList, mapListAt = {}, 0
+    L.attached, L.attachCheckAt = false, 0
+    -- Keep mapList: a widget can survive a save load, and Notify won't fire again for it.
     for k in pairs(textures) do textures[k] = nil end
     crumb(nil)
 end
@@ -832,7 +865,7 @@ local function tick()
     if not map then return end
     local addr = addrOf(map)
     if addr == L.mapAddr then L.map = map end   -- same widget, new Lua wrapper
-    if addr ~= L.mapAddr or not attached() then
+    if addr ~= L.mapAddr or not layerAttached() then
         -- new map widget or a rebuilt pin layer (save load): start over
         local ok, err = guarded("new map layer", startLayer, map)
         if not ok then note("layer failed: " .. tostring(err)) L.map = nil return end
@@ -856,36 +889,16 @@ local function tick()
     if not ok then countError("hover", err) end
 end
 
--- The map widget's own refresh runs every frame it moves; following it there removes the lag.
--- Registered only once the map is first opened in a save, never while the game or the mods load
--- (a native hook registered during a mod reload froze the game once).
-local hooksDone = false
-local function registerHooks()
-    hooksDone = true
-    local hooked = {}
-    for _, fn in ipairs({ "/Script/DogwoodUI.MapWidget:RefreshLabelPositions", "/Script/DogwoodUI.MapWidget:Zoom" }) do
-        local ok = pcall(function()
-            RegisterHook(fn, function(ctx)
-                pcall(function()
-                    if not (L.layer and L.map and L.mapAddr) then return end
-                    local w = ctx:get()
-                    if not (w and w:IsValid() and addrOf(w) == L.mapAddr) then return end
-                    if not (L.layer:IsValid() and w:IsActivated()) then return end
-                    followZoom()
-                end)
-            end)
-        end)
-        hooked[#hooked + 1] = fn:match(":(.+)$") .. "=" .. tostring(ok)
-    end
-    -- a save load restarts the player controller: drop the map state there as well
-    local okR = pcall(function()
-        RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
-            pcall(forget, "player restart (save load)")
-        end)
+-- No hooks on the map widget: the tick follows the zoom, one path only. Map-widget hooks
+-- registered while playing can lose their callback reference in this UE4SS build.
+-- ClientRestart is registered at load, the normal place for it: a save load restarts the
+-- player controller, so the old map state is dropped there.
+local okRestart = pcall(function()
+    RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
+        pcall(forget, "player restart (save load)")
     end)
-    hooked[#hooked + 1] = "ClientRestart=" .. tostring(okR)
-    note("hooks " .. table.concat(hooked, " "))
-end
+end)
+note("restart hook " .. (okRestart and "on" or "not available"))
 
 -- Level loads (UE4SS built-in, no engine hook needed): drop the map state before the old world goes
 local okMap = pcall(function()
@@ -926,19 +939,21 @@ local function clickStep()
 end
 
 -- One queued game-thread job at a time: if a frame is slow the jobs must not pile up.
+-- 16 ms keeps the map UI responsive; the old 5 s scan, not the tick, was the source of the hitch.
 local queued = false
+local function frameStep()
+    tick()
+    if L.layer and L.map and isOpen(L.map) then clickStep() else clickWanted = nil end
+end
+local function frame()
+    local ok, err = pcall(frameStep)
+    if not ok then countError("tick", err) end
+    queued = false
+end
 LoopAsync(16, function()
     if queued then return false end
     queued = true
-    ExecuteInGameThread(function()
-        local ok, err = pcall(function()
-            tick()
-            if L.layer and L.map and isOpen(L.map) then clickStep() else clickWanted = nil end
-            if not hooksDone and L.layer then registerHooks() end
-        end)
-        if not ok then countError("tick", err) end
-        queued = false
-    end)
+    ExecuteInGameThread(frame)
     return false
 end)
 note("ready, open the M map")
