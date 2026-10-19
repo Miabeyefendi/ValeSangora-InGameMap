@@ -29,6 +29,17 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- The mod no longer scans every game object every 5 seconds. The periodic stutter during normal play is gone, whether or not the map is open, and the map overlay appears immediately.
+
+### Changed
+
+- The overlay follows the map's zoom from its own update loop instead of hooking the map widget. This avoids a UE4SS callback failure that could break zoom updates.
+- Hover, filtering and marker resizing do less work per frame, so the map stays responsive while zooming.
+
 ## [1.0.0] - 2026-10-02
 
 ### Added
