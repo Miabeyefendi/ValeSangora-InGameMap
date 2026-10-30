@@ -72,7 +72,7 @@
 1. **Найдите папку игры.** Это папка, в которой лежит `Dawnwalker.exe`. В Steam: правый клик по игре, **Управление**, **Просмотреть локальные файлы**.
 2. **Проверьте UE4SS.** Откройте `Dawnwalker\Binaries\Win64`. Если там есть папка `ue4ss`, UE4SS установлен: переходите к шагу 4.
 3. **Установите UE4SS.** Скачайте `UE4SS_v3.0.1.zip` (не тот, что начинается с `zDEV`) со [страницы релизов UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases), откройте и скопируйте всё содержимое в `Dawnwalker\Binaries\Win64`.
-4. **Скачайте этот мод.** Возьмите `ValeSangoraMap-1.0.0.zip` на [странице релизов](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
+4. **Скачайте этот мод.** Возьмите `ValeSangoraMap-1.0.2.zip` на [странице релизов](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 5. **Скопируйте папку.** Откройте zip и скопируйте папку `ValeSangoraMap` в `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 
 Если всё верно, этот файл существует:
@@ -84,9 +84,11 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>Что внутри zip релиза</b></summary>
 
-`ValeSangoraMap-1.0.0.zip` это папка `src\ValeSangoraMap` этого репозитория в zip, без добавлений: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` и 95 значков PNG. Исполняемых файлов нет.
+`ValeSangoraMap-1.0.2.zip` это папка `src\ValeSangoraMap` этого репозитория в zip, без добавлений: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` и 95 значков PNG. Исполняемых файлов нет.
 
-SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+
+SHA-256 старых версий указан на их страницах релизов.
 
 </details>
 

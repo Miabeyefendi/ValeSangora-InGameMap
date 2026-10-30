@@ -2,7 +2,7 @@
 
 # 📖 Guía de ValeSangora-InGameMap
 
-**1.0.0 · Última actualización 2026-10-02**
+**1.0.2 · Última actualización 2026-10-30**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · **Español** · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -102,7 +102,7 @@ En este repositorio la carpeta del mod es `src\ValeSangoraMap`.
 2. Abre `Dawnwalker\Binaries\Win64`. Si no hay carpeta `ue4ss`, descarga `UE4SS_v3.0.1.zip`
    (no `zDEV`) desde las [versiones de UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases) y
    copia todo su contenido en `Win64`.
-3. Descarga `ValeSangoraMap-1.0.0.zip` desde la
+3. Descarga `ValeSangoraMap-1.0.2.zip` desde la
    [página de versiones](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Copia la carpeta `ValeSangoraMap` del zip en `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Inicia el juego, carga una partida, pulsa **M**.
@@ -112,7 +112,8 @@ En este repositorio la carpeta del mod es `src\ValeSangoraMap`.
 Abre `ue4ss\Mods\ValeSangoraMap\vsm.log` después de iniciar el juego. Contiene:
 
 ```
-loaded 79 categories, 1799 markers
+version 1.0.2, loaded 79 categories, 1799 markers
+update loop on the game thread, 33 ms
 ready, open the M map
 ```
 
@@ -198,8 +199,9 @@ escala de la capa.
 
 **Qué hace.** Muestra el nombre y la categoría del marcador bajo el ratón.
 
-**Cómo funciona.** El sistema de interfaz del juego indica el icono bajo el ratón. El mod revisa
-150 iconos por fotograma buscando uno nuevo, y el actual en cada fotograma.
+**Cómo funciona.** El sistema de interfaz del juego indica el icono bajo el ratón. Mientras el ratón o el mapa se mueven, el mod revisa
+150 iconos por fotograma hasta encontrar el que está bajo el ratón. Si nada se mueve, no
+hace ningún trabajo.
 
 **Cómo se usa.** Apunta a un marcador.
 

@@ -19,6 +19,8 @@ end
 local DONE_OPACITY = 0.3
 local BUILD_PER_TICK = 60     -- widgets created per tick while the layer is (re)built (1799 in ~0.5 s, no hitch)
 local RESIZE_PER_TICK = 300   -- icons resized per tick after a zoom change
+local TICK_MS = 33            -- update interval
+local TEXTURES_PER_TICK = 6   -- icon files loaded per tick while the layer is built (no single big hitch)
 local LOG_FILE = MOD .. "\\vsm.log"
 
 local function log(s) print("[ValeSangoraMap] " .. s .. "\n") end
@@ -29,6 +31,19 @@ local function note(s)
     logLines[#logLines + 1] = os.date("%H:%M:%S ") .. s
     local f = io.open(LOG_FILE, "w")
     if f then f:write(table.concat(logLines, "\n") .. "\n"); f:close() end
+end
+
+-- ---------------------------------------------------------------------------------------------
+-- Pinned functions. UE4SS keeps a function we hand it (update loop, hooks, key binds) only as a
+-- reference. When Lua's garbage collector frees that function, UE4SS throws "Ref was not function"
+-- and drops this mod's whole tick: the panel freezes. Other UE4SS mods for this game work around
+-- the same fault. So every function given to UE4SS is created ONCE and kept here; nothing is ever
+-- passed as a fresh closure, and the garbage the panel makes can no longer free one of them.
+-- ---------------------------------------------------------------------------------------------
+local pinned = {}
+local function pin(fn)
+    pinned[#pinned + 1] = fn
+    return fn
 end
 
 -- ---------------------------------------------------------------------------------------------
@@ -105,7 +120,7 @@ do
         end
         f:close()
     end
-    note(string.format("loaded %d categories, %d markers", #catOrder, #markers))
+    note(string.format("version 1.0.2, loaded %d categories, %d markers", #catOrder, #markers))
 end
 
 -- Progress: ids of markers marked done, one per line (Mods\ValeSangoraMap\progress.txt)
@@ -126,41 +141,58 @@ end
 -- ---------------------------------------------------------------------------------------------
 -- Game map access
 -- ---------------------------------------------------------------------------------------------
+local function addrRaw(w) return w:GetAddress() end
+local function nameRaw(w) return w:GetFullName() end
 local function addrOf(w)
-    local ok, a = pcall(function() return w:GetAddress() end)
+    local ok, a = pcall(addrRaw, w)
     if ok and a then return a end
-    local ok2, n = pcall(function() return w:GetFullName() end)
+    local ok2, n = pcall(nameRaw, w)
     return ok2 and n or tostring(w)
 end
 
+local function activeRaw(w) return w:IsValid() and w:IsActivated() end
 local function isOpen(w)
-    local ok, a = pcall(function() return w:IsValid() and w:IsActivated() end)
+    local ok, a = pcall(activeRaw, w)
     return ok and a
 end
 
--- After a save load an old WBP_Map_C can linger until GC: keep the one that is on screen.
--- FindAllOf walks the whole object array, so the list of map widgets is refreshed only every 5 s;
--- each tick just asks those one or two widgets whether they are on screen.
+-- The map widget is one persistent object. Once it has been seen on screen after a save load it is
+-- only asked "are you open" (two cheap calls). FindAllOf walks every object of the game, so it runs
+-- every 5 s only while no map has been seen yet, then once a minute as a safety net, and a slow
+-- search is written to the log.
 local mapList, mapListAt = {}, 0
+local mapSeen = false              -- a map widget was on screen since the last forget()
+local scanNotes, scanCount = 0, 0
 local function openMap()
-    if os.clock() >= mapListAt then
-        mapListAt = os.clock() + 5
-        mapList = {}
-        for _, w in ipairs(FindAllOf("WBP_Map_C") or {}) do
-            if w:IsValid() then mapList[#mapList + 1] = w end
-        end
+    for _, w in ipairs(mapList) do
+        if isOpen(w) then mapSeen = true return w end
+    end
+    if os.clock() < mapListAt then return nil end
+    mapListAt = os.clock() + (mapSeen and 60 or 5)
+    local t0 = os.clock()
+    mapList = {}
+    for _, w in ipairs(FindAllOf("WBP_Map_C") or {}) do
+        if w:IsValid() then mapList[#mapList + 1] = w end
+    end
+    scanCount = scanCount + 1
+    local ms = (os.clock() - t0) * 1000
+    if ms > 15 and scanNotes < 5 then
+        scanNotes = scanNotes + 1
+        note(string.format("slow object search: %.0f ms (search %d)", ms, scanCount))
     end
     for _, w in ipairs(mapList) do
-        if isOpen(w) then return w end
+        if isOpen(w) then mapSeen = true return w end
     end
     return nil
 end
 
 local textures = {}
 local renderLib = nil
+local importsThisTick = 0
 local function texture(cat)
     local t = textures[cat]
     if t and t:IsValid() then return t end
+    importsThisTick = importsThisTick + 1
     renderLib = renderLib or StaticFindObject("/Script/Engine.Default__KismetRenderingLibrary")
     local ok, tex = pcall(function() return renderLib:ImportFileAsTexture2D(UEHelpers.GetGameInstance(), MOD .. "\\Icons\\" .. cat .. ".png") end)
     if ok and tex and tex:IsValid() then textures[cat] = tex return tex end
@@ -228,6 +260,7 @@ local function startLayer(map)
     local old = removeLeftovers(container, "VSM_Layer_")
     if old > 0 then note("removed " .. old .. " old marker layer(s)") end
     L.pending, L.applyAt, L.hits, L.hot, L.panel, L.panelBg = nil, nil, nil, nil, nil, nil
+    L.panelSwept, L.scanLeft, L.hoverDirty, L.attachCheckAt, L.sigMoves = nil, 0, true, nil, nil
     L.layer = construct("/Script/UMG.CanvasPanel", map.WidgetTree, "VSM_Layer_" .. L.serial)
     local slot = container:AddChildToCanvas(L.layer)
     slot:SetAutoSize(false)
@@ -292,39 +325,44 @@ local function shown(it)
     return true
 end
 
-function applyItem(it)
+local function applyRaw(img, vis, opacity)
+    img:SetVisibility(vis)
+    img:SetRenderOpacity(opacity)
+end
+
+local function applyItem(it)
     local isDone = done[it.m.id]
-    local show = shown(it)
-    pcall(function()
-        it.img:SetVisibility(show and 0 or 1)
-        it.img:SetRenderOpacity((isDone and doneMode == "all") and DONE_OPACITY or 1)
-    end)
+    pcall(applyRaw, it.img, shown(it) and 0 or 1, (isDone and doneMode == "all") and DONE_OPACITY or 1)
 end
 local function applyAll()
     for i = 1, L.built do if L.items[i] then applyItem(L.items[i]) end end
+end
+
+local function buildOne(i, m)
+    local img = construct("/Script/UMG.Image", L.map.WidgetTree, "VSM_M" .. L.serial .. "_" .. i)
+    local tex = texture(m.cat)
+    if tex then img:SetBrushFromTexture(tex, false) end
+    local slot = L.layer:AddChildToCanvas(img)
+    local a = L.affine
+    local lx, ly = a.a * m.x + a.b * m.y + a.c, a.d * m.x + a.e * m.y + a.f
+    slot:SetAlignment({ X = 0.5, Y = 0.5 })
+    slot:SetPosition({ X = lx, Y = ly })
+    local s = iconUnits() * L.z0 / L.zoom
+    slot:SetSize({ X = s, Y = s })
+    L.items[i] = { img = img, slot = slot, lx = lx, ly = ly, m = m }
+    applyItem(L.items[i])
 end
 
 local function buildStep()
     crumb("building markers")
     local n = 0
     while L.built < #markers and n < BUILD_PER_TICK do
+        local m = markers[L.built + 1]
+        -- loading icon files is the slow part: a few per tick, the rest of the markers wait
+        if not textures[m.cat] and importsThisTick >= TEXTURES_PER_TICK then break end
         L.built = L.built + 1
         n = n + 1
-        local m = markers[L.built]
-        local ok, err = pcall(function()
-            local img = construct("/Script/UMG.Image", L.map.WidgetTree, "VSM_M" .. L.serial .. "_" .. L.built)
-            local tex = texture(m.cat)
-            if tex then img:SetBrushFromTexture(tex, false) end
-            local slot = L.layer:AddChildToCanvas(img)
-            local a = L.affine
-            local lx, ly = a.a * m.x + a.b * m.y + a.c, a.d * m.x + a.e * m.y + a.f
-            slot:SetAlignment({ X = 0.5, Y = 0.5 })
-            slot:SetPosition({ X = lx, Y = ly })
-            local s = iconUnits() * L.z0 / L.zoom
-            slot:SetSize({ X = s, Y = s })
-            L.items[L.built] = { img = img, slot = slot, lx = lx, ly = ly, m = m }
-            applyItem(L.items[L.built])
-        end)
+        local ok, err = pcall(buildOne, L.built, m)
         if not ok and L.built < 3 then note("marker build failed: " .. tostring(err)) end
     end
     if L.built >= #markers then
@@ -380,6 +418,7 @@ local function measurePins()
 end
 
 -- after the zoom settled: give every icon its on-screen size again (spread over ticks)
+local function resizeOne(slot, s) slot:SetSize({ X = s, Y = s }) end
 local function resizeStep()
     if not L.settleAt or os.clock() < L.settleAt then return end
     if L.resizeAt == 1 then pcall(measurePins) end
@@ -388,7 +427,7 @@ local function resizeStep()
     local n = 0
     while L.resizeAt <= L.built and n < RESIZE_PER_TICK do
         local it = L.items[L.resizeAt]
-        if it then pcall(function() it.slot:SetSize({ X = s, Y = s }) end) end
+        if it then pcall(resizeOne, it.slot, s) end
         L.resizeAt = L.resizeAt + 1
         n = n + 1
     end
@@ -445,8 +484,9 @@ local function ensureTip()
     return t
 end
 
+local function hoveredRaw(img) return img:IsHovered() end
 local function isHovered(it)
-    local ok, h = pcall(function() return it.img:IsHovered() end)
+    local ok, h = pcall(hoveredRaw, it.img)
     return ok and h == true
 end
 
@@ -466,8 +506,10 @@ end
 
 local hoverSeen = false
 local function hoverStep()
+    -- the mouse and the map have not moved since the last full pass: nothing new to find
+    if (L.scanLeft or 0) <= 0 then return end
     if L.hover then
-        if shown(L.hover) and isHovered(L.hover) then return end
+        if shown(L.hover) and isHovered(L.hover) then L.scanLeft = 0 return end
         showTip(nil)
     end
     local n = 0
@@ -475,9 +517,11 @@ local function hoverStep()
         if not L.scanAt or L.scanAt > L.built then L.scanAt = 1 end
         local it = L.items[L.scanAt]
         L.scanAt, n = L.scanAt + 1, n + 1
+        L.scanLeft = L.scanLeft - 1
         if it and shown(it) and isHovered(it) then
             if not hoverSeen then hoverSeen = true note("hover works: " .. it.m.title) end
             showTip(it)
+            L.scanLeft = 0
             return
         end
     end
@@ -517,6 +561,7 @@ local function pendingStep()
     applyItem(it)
     saveProgress()
     if L.panel then L.panelDirty = true end
+    L.hoverDirty = true
     showTip(shown(it) and it or nil)
 end
 
@@ -634,6 +679,7 @@ end
 local function refilter()
     saveSettings()
     L.applyAt = 1
+    L.hoverDirty = true
     if L.hover then showTip(nil) end
 end
 
@@ -645,6 +691,7 @@ local function markAll(keys)
         for _, m in ipairs(markers) do if set[m.cat] then done[m.id] = (not complete) or nil end end
         saveProgress()
         L.applyAt = 1
+        L.hoverDirty = true
         if L.hover then showTip(nil) end
     end
 end
@@ -664,7 +711,7 @@ local function buildPanel()
     if L.panel and L.panel:IsValid() then pcall(function() L.panel:RemoveFromParent() end) end
     L.panel, L.hits, L.hot = nil, {}, nil
     local root = screenRoot()
-    removeLeftovers(root, "VSM_Panel_")
+    if not L.panelSwept then L.panelSwept = true removeLeftovers(root, "VSM_Panel_") end
     local canvas = construct("/Script/UMG.CanvasPanel", L.map.WidgetTree, name("VSM_Panel_"))
     fillSlot(root:AddChild(canvas))
     canvas:SetVisibility(4)            -- SelfHitTestInvisible: only the panel's own areas take the mouse
@@ -776,16 +823,20 @@ local function buildPanel()
     end
     P = nil
     L.panel, L.panelDirty = canvas, false
+    L.hoverDirty, L.panelHoverDirty = true, true
 end
 
--- hover highlight of the panel's buttons
+-- hover highlight of the panel's buttons (only when the mouse is near the panel and has moved)
 local function panelHover()
-    if not L.hits then return end
+    if not L.hits or not L.panelHoverDirty then return end
+    L.panelHoverDirty = false
     local hot = nil
-    for i = #L.hits, 1, -1 do          -- last added is on top
-        local h = L.hits[i]
-        local ok, v = pcall(function() return h.img:IsHovered() end)
-        if ok and v then hot = h break end
+    if not L.mouseX or L.mouseX < 800 then
+        for i = #L.hits, 1, -1 do          -- last added is on top
+            local h = L.hits[i]
+            local ok, v = pcall(hoveredRaw, h.img)
+            if ok and v then hot = h break end
+        end
     end
     if hot == L.hot then return end
     if L.hot then pcall(function() L.hot.img:SetColorAndOpacity(L.hot.base) end) end
@@ -799,7 +850,7 @@ local function clickPanel(right)
         local h = L.hits[i]
         local fn = right and h.rmb or (not right and h.action)
         local ok, v = false, false
-        if fn then ok, v = pcall(function() return h.img:IsHovered() end) end
+        if fn then ok, v = pcall(hoveredRaw, h.img) end
         if ok and v then
             pcall(function() h.img:SetColorAndOpacity(C.press) end)
             L.hot = nil
@@ -817,22 +868,63 @@ local function forget(why)
     note("map state dropped: " .. (why or "map widget gone"))
     L.map, L.mapAddr, L.layer, L.items, L.built = nil, nil, nil, {}, 0
     L.hover, L.tip, L.panel, L.hits, L.hot, L.pending, L.panelBg = nil, nil, nil, nil, nil, nil, nil
-    L.applyAt, L.settleAt = nil, nil
-    mapList, mapListAt = {}, 0
+    L.applyAt, L.settleAt, L.sigMoves, L.scanLeft = nil, nil, nil, 0
+    mapList, mapListAt, mapSeen = {}, 0, false
     for k in pairs(textures) do textures[k] = nil end
     crumb(nil)
 end
 
+local mapActive = false             -- the map is on screen (set by tick, read by the key callbacks)
+
+local layoutLib = nil
+-- mouse position and view centre. When neither them nor the zoom changed since the last pass, the
+-- hover scan has nothing new to find and is skipped.
+local function viewSignature()
+    layoutLib = layoutLib or StaticFindObject("/Script/UMG.Default__WidgetLayoutLibrary")
+    local v = layoutLib:GetMousePositionOnViewport(L.map)
+    local c = L.map:GetMapPointInViewCenter()
+    return v.X, v.Y, c.X, c.Y
+end
+
+local function pointerStep()
+    local now = os.clock()
+    local ok, mx, my, cx, cy = pcall(viewSignature)
+    local changed = true
+    if ok then
+        local moved = mx ~= L.sigMx or my ~= L.sigMy or cx ~= L.sigCx or cy ~= L.sigCy or L.zoom ~= L.sigZ
+        L.sigMx, L.sigMy, L.sigCx, L.sigCy, L.sigZ = mx, my, cx, cy, L.zoom
+        L.mouseX = mx
+        if moved then L.sigMoves = (L.sigMoves or 0) + 1 end
+        changed = moved or L.hoverDirty
+        -- if the position never changes (not readable on some setup), still look every 2 s
+        if not changed and (L.sigMoves or 0) == 0 and now - (L.forcedAt or 0) > 2 then changed = true end
+    else
+        L.mouseX = nil
+    end
+    if changed then
+        L.forcedAt = now
+        L.hoverDirty = false
+        L.scanLeft = L.built
+        L.panelHoverDirty = true
+    end
+end
+
 local function tick()
-    if os.clock() < pausedUntil then return end
-    if #markers == 0 then return end
+    if os.clock() < pausedUntil or #markers == 0 then mapActive = false return end
     if L.map and not L.map:IsValid() then forget() end
     if L.layer and not L.layer:IsValid() then forget() end
     local map = openMap()
+    mapActive = map ~= nil
     if not map then return end
     local addr = addrOf(map)
     if addr == L.mapAddr then L.map = map end   -- same widget, new Lua wrapper
-    if addr ~= L.mapAddr or not attached() then
+    local needLayer = addr ~= L.mapAddr
+    local now = os.clock()
+    if not needLayer and now >= (L.attachCheckAt or 0) then
+        L.attachCheckAt = now + 1               -- the layer's parent is checked once a second
+        needLayer = not attached()
+    end
+    if needLayer then
         -- new map widget or a rebuilt pin layer (save load): start over
         local ok, err = guarded("new map layer", startLayer, map)
         if not ok then note("layer failed: " .. tostring(err)) L.map = nil return end
@@ -850,61 +942,35 @@ local function tick()
         L.applyAt = (last < L.built) and last + 1 or nil
         if not L.applyAt then crumb(nil) end
     end
+    pcall(pointerStep)
     pcall(panelHover)
     pcall(pendingStep)
     local ok, err = pcall(hoverStep)
     if not ok then countError("hover", err) end
 end
 
--- The map widget's own refresh runs every frame it moves; following it there removes the lag.
--- Registered only once the map is first opened in a save, never while the game or the mods load
--- (a native hook registered during a mod reload froze the game once).
-local hooksDone = false
-local function registerHooks()
-    hooksDone = true
-    local hooked = {}
-    for _, fn in ipairs({ "/Script/DogwoodUI.MapWidget:RefreshLabelPositions", "/Script/DogwoodUI.MapWidget:Zoom" }) do
-        local ok = pcall(function()
-            RegisterHook(fn, function(ctx)
-                pcall(function()
-                    if not (L.layer and L.map and L.mapAddr) then return end
-                    local w = ctx:get()
-                    if not (w and w:IsValid() and addrOf(w) == L.mapAddr) then return end
-                    if not (L.layer:IsValid() and w:IsActivated()) then return end
-                    followZoom()
-                end)
-            end)
-        end)
-        hooked[#hooked + 1] = fn:match(":(.+)$") .. "=" .. tostring(ok)
-    end
-    -- a save load restarts the player controller: drop the map state there as well
-    local okR = pcall(function()
-        RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
-            pcall(forget, "player restart (save load)")
-        end)
-    end)
-    hooked[#hooked + 1] = "ClientRestart=" .. tostring(okR)
-    note("hooks " .. table.concat(hooked, " "))
-end
+-- Hooks and key binds. Every function given to UE4SS goes through pin() and is created once.
+-- No hooks on the map widget (1.0.1). The one engine hook is registered here, while the mod loads: a
+-- save load restarts the player controller, so the old map state is dropped there.
+local onRestart = pin(function() pcall(forget, "player restart (save load)") end)
+local okRestart = pcall(RegisterHook, "/Script/Engine.PlayerController:ClientRestart", onRestart)
+note("restart hook " .. (okRestart and "on" or "not available"))
 
--- Level loads (UE4SS built-in, no engine hook needed): drop the map state before the old world goes
-local okMap = pcall(function()
-    RegisterLoadMapPreHook(function() pcall(forget, "level load") end)
-end)
+-- Level loads (UE4SS built-in): drop the map state before the old world goes
+local onLoadMap = pin(function() pcall(forget, "level load") end)
+local okMap = pcall(RegisterLoadMapPreHook, onLoadMap)
 note("level load hook " .. (okMap and "on" or "not available"))
 
--- Mouse buttons: the key callback only records the click (no game calls there, no extra queued
--- jobs); the tick handles it, one click at a time and at most one every 0.2 s, so clicking fast
--- never stacks panel rebuilds.
+-- Mouse buttons: the key callback only records the click, and only while the map is on screen (no
+-- game calls there); the tick handles it, one click at a time and at most one every 0.2 s, so
+-- clicking fast never stacks panel rebuilds.
 local clickWanted, clickAt = nil, 0
-local okL, lErr = pcall(function()
-    RegisterKeyBind(Key.LEFT_MOUSE_BUTTON, function() clickWanted = clickWanted or "left" end)
-end)
+local onLeft = pin(function() if mapActive then clickWanted = clickWanted or "left" end end)
+local okL, lErr = pcall(RegisterKeyBind, Key and Key.LEFT_MOUSE_BUTTON, onLeft)
 note("left click " .. (okL and "bound" or ("not bound: " .. tostring(lErr))))
 -- right click: only on the panel's categories (mark all); on the map it stays the game's waypoint
-local okR, rErr = pcall(function()
-    RegisterKeyBind(Key.RIGHT_MOUSE_BUTTON, function() clickWanted = clickWanted or "right" end)
-end)
+local onRight = pin(function() if mapActive then clickWanted = clickWanted or "right" end end)
+local okR, rErr = pcall(RegisterKeyBind, Key and Key.RIGHT_MOUSE_BUTTON, onRight)
 note("right click " .. (okR and "bound" or ("not bound: " .. tostring(rErr))))
 
 local function clickStep()
@@ -925,20 +991,52 @@ local function clickStep()
     if not ok then countError("mark marker", used) end
 end
 
--- One queued game-thread job at a time: if a frame is slow the jobs must not pile up.
-local queued = false
-LoopAsync(16, function()
-    if queued then return false end
-    queued = true
-    ExecuteInGameThread(function()
-        local ok, err = pcall(function()
-            tick()
-            if L.layer and L.map and isOpen(L.map) then clickStep() else clickWanted = nil end
-            if not hooksDone and L.layer then registerHooks() end
-        end)
-        if not ok then countError("tick", err) end
-        queued = false
-    end)
-    return false
+-- One update step. While the map is closed it does nothing but look at the clock, and it looks for
+-- the map only four times a second.
+local nextIdle = 0
+local function tickAll()
+    if not mapActive then
+        local now = os.clock()
+        if now < nextIdle then return end
+        nextIdle = now + 0.25
+    end
+    tick()
+    if mapActive and L.layer and L.map then clickStep() else clickWanted = nil end
+end
+
+local slowTicks = 0
+local gameTick = pin(function()
+    importsThisTick = 0
+    local t0 = os.clock()
+    local ok, err = pcall(tickAll)
+    if not ok then countError("tick", err) end
+    local ms = (os.clock() - t0) * 1000
+    if ms > 40 and slowTicks < 8 then
+        slowTicks = slowTicks + 1
+        note(string.format("slow update: %.0f ms (markers built %d)", ms, L.built))
+    end
 end)
+
+-- The loop runs on the game thread itself (no second thread touching this mod's Lua state, no new
+-- function handed to UE4SS every step).
+local loopOk, loopHandle = false, nil
+if type(LoopInGameThreadWithDelay) == "function" then
+    loopOk, loopHandle = pcall(LoopInGameThreadWithDelay, TICK_MS, gameTick)
+end
+if loopOk then
+    pinned.loopHandle = loopHandle
+    note("update loop on the game thread, " .. TICK_MS .. " ms")
+else
+    -- UE4SS without that call: timer thread plus game thread, both functions pinned and created once
+    local busy = false
+    local onGameThread = pin(function() gameTick() busy = false end)
+    local onTimer = pin(function()
+        if busy then return false end
+        busy = true
+        ExecuteInGameThread(onGameThread)
+        return false
+    end)
+    LoopAsync(TICK_MS, onTimer)
+    note("update loop on a timer thread, " .. TICK_MS .. " ms")
+end
 note("ready, open the M map")

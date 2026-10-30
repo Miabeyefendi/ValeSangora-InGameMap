@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap 教程
 
-**1.0.0 · 最后更新 2026-10-02**
+**1.0.2 · 最后更新 2026-10-30**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · **简体中文** · [Русский](./TUTORIAL_RU.md)
 
@@ -97,7 +97,7 @@ settings.txt <── 筛选面板
    [UE4SS 发布页](https://github.com/UE4SS-RE/RE-UE4SS/releases) 下载 `UE4SS_v3.0.1.zip`
    （不是 `zDEV`），把里面的全部内容复制到 `Win64`。
 3. 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载
-   `ValeSangoraMap-1.0.0.zip`。
+   `ValeSangoraMap-1.0.2.zip`。
 4. 把 zip 中的 `ValeSangoraMap` 文件夹复制到 `Dawnwalker\Binaries\Win64\ue4ss\Mods`。
 5. 启动游戏，读取存档，按 **M**。
 
@@ -106,7 +106,8 @@ settings.txt <── 筛选面板
 游戏启动后打开 `ue4ss\Mods\ValeSangoraMap\vsm.log`。其中包含：
 
 ```
-loaded 79 categories, 1799 markers
+version 1.0.2, loaded 79 categories, 1799 markers
+update loop on the game thread, 33 ms
 ready, open the M map
 ```
 
@@ -187,8 +188,8 @@ all markers built
 
 **做什么。** 显示鼠标下标记的名称和分类。
 
-**怎么运作。** 游戏的界面系统告知被悬停的图标。模组每帧检查 150 个图标寻找新的悬停，并每帧
-检查当前悬停的那个。
+**怎么运作。** 游戏的界面系统告知被悬停的图标。鼠标或地图移动时，模组每帧检查 150 个图标，直到找到被悬停的那个。
+什么都不动时，它完全不做任何工作。
 
 **怎么用。** 指向一个标记。
 

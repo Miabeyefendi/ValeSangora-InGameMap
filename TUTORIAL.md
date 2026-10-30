@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap Tutorial
 
-**1.0.0 · Last updated 2026-10-02**
+**1.0.2 · Last updated 2026-10-30**
 
 **English** · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -101,7 +101,7 @@ In this repository the mod folder is `src\ValeSangoraMap`.
 2. Open `Dawnwalker\Binaries\Win64`. If there is no `ue4ss` folder, download `UE4SS_v3.0.1.zip`
    (not `zDEV`) from the [UE4SS releases](https://github.com/UE4SS-RE/RE-UE4SS/releases) and
    copy everything in it into `Win64`.
-3. Download `ValeSangoraMap-1.0.0.zip` from the
+3. Download `ValeSangoraMap-1.0.2.zip` from the
    [releases page](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Copy the `ValeSangoraMap` folder from the zip into `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Start the game, load a save, press **M**.
@@ -111,7 +111,8 @@ In this repository the mod folder is `src\ValeSangoraMap`.
 Open `ue4ss\Mods\ValeSangoraMap\vsm.log` after the game started. It contains:
 
 ```
-loaded 79 categories, 1799 markers
+version 1.0.2, loaded 79 categories, 1799 markers
+update loop on the game thread, 33 ms
 ready, open the M map
 ```
 
@@ -194,8 +195,9 @@ half a second (60 markers per frame). Zoom changes only the layer scale.
 
 **What it does.** Shows the name and category of the marker under the mouse.
 
-**How it works.** The game's UI system reports the hovered icon. The mod checks 150 icons per
-frame for a new hover and the hovered one every frame.
+**How it works.** The game's UI system reports the hovered icon. While the mouse or the map moves,
+the mod checks 150 icons per frame until it finds the hovered one. While nothing moves, it
+does no work at all.
 
 **How to use it.** Point at a marker.
 

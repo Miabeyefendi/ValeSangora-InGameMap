@@ -29,6 +29,29 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 ---
 
+## [1.0.2] - 2026-10-10
+
+### Fixed
+
+- The panel could freeze, with `Ref was not function` in the UE4SS console. UE4SS lost track of the mod's update function after Lua cleaned up its memory. Every function the mod hands to UE4SS is now created once and kept.
+- Lag and stutter with several mods installed: while the map is closed the mod now does almost nothing (it no longer searches the whole game for the map every few seconds), and while the map is open it no longer checks every icon when nothing moves.
+- Icon files are loaded a few per frame when the map opens, instead of in one go.
+
+### Changed
+
+- The mod's update loop runs on the game thread, so no second thread touches the mod's data.
+- The log writes a line when a step is slow (`slow update`, `slow object search`), so lag reports can show where the time went.
+
+---
+
+## [1.0.1] - 2026-10-03
+
+### Fixed
+
+- Panel freezing with `Ref was not function` for some players: the hooks on the map widget are gone (zoom is followed by the update loop), and the update loop runs half as often.
+
+---
+
 ## [1.0.0] - 2026-10-02
 
 ### Added
@@ -48,4 +71,6 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 <!-- Keep this link block at the bottom and add one line per release. -->
 
+[1.0.2]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.2
+[1.0.1]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.0
