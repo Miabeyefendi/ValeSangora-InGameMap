@@ -29,6 +29,23 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 ---
 
+## [1.0.3] - 2026-10-30
+
+### Added
+
+- 18 new markers from the latest community map data: 9 containers, 3 points of interest, 2 character development manuals, 1 building, 1 writing, 1 shrine and 1 legendary equipment. The map now has 1816 markers.
+
+### Changed
+
+- Categories and groups without a single marker are no longer listed in the panel, so there are no more 0/0 rows. The Glossary group is gone, 62 categories are left.
+- One manual marker is now named Swordmastery Manual.
+
+### Removed
+
+- One Witchcraft Manual marker that is no longer on the community map.
+
+---
+
 ## [1.0.2] - 2026-10-10
 
 ### Fixed
@@ -71,6 +88,7 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 <!-- Keep this link block at the bottom and add one line per release. -->
 
+[1.0.3]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.3
 [1.0.2]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.0

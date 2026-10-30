@@ -12,7 +12,6 @@
 #parent	db-117467	Manuals and Recipes
 #parent	db-117466	Books
 #parent	db-117567	Perks
-#parent	db-117561	Glossary
 #parent	map-7985	Navigation
 #parent	map-7988	Miscellaneous
 #cat	db-117524	Landmarks	Building(s)
@@ -27,7 +26,6 @@
 #cat	db-117542	Activities	Brencis's Banner
 #cat	db-117543	Activities	Curious House
 #cat	db-117541	Activities	Haunted Site
-#cat	db-117545	Activities	Headhunters
 #cat	db-117546	Activities	Monster's Lair
 #cat	db-117549	Activities	Person in Danger
 #cat	db-117548	Activities	Soldier Camp
@@ -35,17 +33,14 @@
 #cat	db-117539	Activities	Will-o-the-Wisps
 #cat	db-117530	Vendors	Armourer
 #cat	db-117529	Vendors	Blacksmith
-#cat	db-117536	Vendors	Curio Merchant
 #cat	db-117528	Vendors	General Store
 #cat	db-117532	Vendors	Medic
 #cat	db-117534	Vendors	Silver Trader
 #cat	db-117535	Vendors	Swordmastery Teacher
 #cat	db-117531	Vendors	Tavern
 #cat	db-117533	Vendors	Witchcraft Vendor
-#cat	db-117517	Journal	Main Goal
 #cat	db-117518	Journal	Quests
 #cat	db-117550	Journal	Court
-#cat	db-117519	Journal	Activities
 #cat	db-117559	Journal	Quest Objective
 #cat	db-117556	Enemies	Animal
 #cat	db-117558	Enemies	Mortal
@@ -54,7 +49,6 @@
 #cat	db-117491	Weaponry	Greatsword
 #cat	db-117490	Weaponry	Longsword
 #cat	db-117488	Weaponry	Shortsword
-#cat	db-117489	Weaponry	Swordlike
 #cat	db-117470	Armour	Boots
 #cat	db-117471	Armour	Bracers
 #cat	db-117472	Armour	Chestpiece
@@ -63,9 +57,7 @@
 #cat	db-117469	Accessories	Rings
 #cat	db-117481	Items	Catalysts
 #cat	db-117476	Items	Consumables
-#cat	db-117477	Items	Currency
 #cat	db-117478	Items	Ingredients
-#cat	db-117479	Items	Junk
 #cat	db-117482	Items	Keys
 #cat	db-117483	Items	Quest Items
 #cat	db-117480	Items	Trade Goods
@@ -75,25 +67,15 @@
 #cat	db-117487	Manuals and Recipes	Recipes
 #cat	db-117475	Books	Treasure Maps
 #cat	db-117474	Books	Writings
-#cat	db-117569	Perks	Swordmastery
 #cat	db-117570	Perks	Vampirism
 #cat	db-117568	Perks	Witchcraft
-#cat	db-117562	Glossary	Characters
-#cat	db-117563	Glossary	Legends
-#cat	db-117565	Glossary	Locations
-#cat	db-117564	Glossary	Monsters
-#cat	db-117566	Glossary	Writings
 #cat	map-7986	Navigation	Locked Door
 #cat	map-7991	Navigation	Night Only
 #cat	map-7994	Miscellaneous	Compel Soul
-#cat	map-7989	Miscellaneous	Misc.
-#cat	map-7990	Miscellaneous	Note
 #cat	mg-27157	Vendors	Food Vendor
-#cat	mg-27154	Activities	Activity
 #cat	mg-27183	Enemies	Headhunters
 #cat	mg-27184	Loot	Hidden Treasure
 #cat	mg-27273	Items	Legendary Equipment
-#cat	mg-27156	Miscellaneous	Easter Egg
 db-117518	258089	373742	287887	Withering Away
 db-117554	218740	333646	287893	Chest
 db-117521	205339	357326	287898	Sloughside Mill
@@ -1784,6 +1766,20 @@ db-117473	48062	339527	291314	Mercenary's Greaves
 db-117488	224689	297889	291315	The Prizewinner
 db-117468	-57709	370758	291316	Corrupted Pendant
 db-117568	75693	523447	291317	Font of Life
+db-117524	253095	357673	291439	kuno
+db-117554	253885	404875	291440	chest
+db-117474	252910	357435	291450	Kuno's Drawing
+db-117554	251375	393669	291451	chest
+db-117554	222676	358516	291452	Chest
+db-117554	220033	358807	291453	Chest
+db-117554	104138	423919	291459	Corpse
+db-117554	188323	296723	291460	Chest
+db-117554	214353	322546	291462	Corpse
+db-117554	273950	332884	297836	Rockpile
+db-117560	284809	368379	297837	Campsite
+db-117554	260863	389494	297839	Chest
+db-117560	221645	364753	300283	Campsite
+db-117521	45683	341086	9953825	Secret Shrine
 db-117524	46132	346583	9941685	Vicho's House
 db-117524	77568	191766	9941727	Lacra's Hideout
 db-117524	50837	344099	9942110	Ocha's Hideout
@@ -1818,7 +1814,7 @@ db-117544	114740	365934	9941715	Soldier Picket
 mg-27183	181315	357747	9940634	Headhunters
 mg-27183	99468	317384	9941611	Headhunters
 mg-27183	-47449	307937	9941630	Headhunters
-db-117486	215830	363220	9935933	Manual
+db-117486	215830	363220	9935933	Swordmastery Manual
 db-117486	216306	361555	9935934	Witchcraft Manual
 db-117486	166437	341571	9936594	Swordmastery Manual
 db-117486	191087	446575	9938149	Witchcraft Manual
@@ -1826,7 +1822,6 @@ db-117486	134160	434889	9938164	Swordmastery Manual
 db-117486	101394	362075	9938185	Swordmastery Manual
 db-117486	60690	407846	9938228	Swordmastery Manual
 db-117486	117484	422307	9938234	Swordmastery Manual
-db-117486	111789	239604	9938581	Witchcraft Manual
 db-117486	92232	242193	9938583	Witchcraft Manual
 db-117486	103512	311675	9938600	Swordmastery Manual
 db-117486	116620	319341	9938604	Swordmastery Manual
@@ -1884,12 +1879,16 @@ db-117486	142676	350238	9941714	Witchcraft Manual
 db-117486	114026	366437	9941716	Witchcraft Manual
 db-117486	-65062	448643	9941719	Witchcraft Manual
 db-117486	44863	347878	9942128	Burning Blood Manual
+db-117486	213237	401224	9953968	Manual
+db-117486	43120	336884	9953974	Witchcraft Manual
 mg-27184	-51306	281905	9938929	Ill-Gotten Treasure
 mg-27273	181368	358434	9941627	The Purge
 mg-27273	99811	316696	9941628	The Shredder
 mg-27273	-47925	307567	9941631	Ring of Focus
 mg-27273	-38705	359421	9941634	Ring of the Night
 mg-27273	133091	235853	9942884	Phial of Brencis's Blood
+mg-27273	39896	337967	9953973	The Hand of Fate
 db-117560	39894	352424	9938980	Boyaress Xanthe
 db-117560	26733	352978	9942123	Hole in the Wall
 db-117560	204464	393850	9942906	Further Twists and Turns
+db-117560	44838	332047	9953970	Father Florin's Hideout

@@ -7,7 +7,7 @@
 
 # ValeSangora-InGameMap
 
-**1799 меток сообщества для The Blood of Dawnwalker прямо на карте самой игры. Lua-мод для UE4SS: скопируйте одну папку и играйте.**
+**1816 меток сообщества для The Blood of Dawnwalker прямо на карте самой игры. Lua-мод для UE4SS: скопируйте одну папку и играйте.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-A78BFA?style=for-the-badge&logo=gnu&logoColor=white)](./LICENSE)
 [![Version](https://img.shields.io/github/v/release/Miabeyefendi/ValeSangora-InGameMap?style=for-the-badge&color=F59E0B&label=version)](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest)
@@ -38,7 +38,7 @@
 ## ✨ Главное
 
 - **На карте самой игры** - нажмите M как обычно, метки уже там, второго окна нет
-- **1799 меток, 79 категорий** - святилища, лагеря, торговцы, задания, сундуки, руководства, книги, враги и другое
+- **1816 меток, 62 категорий** - святилища, лагеря, торговцы, задания, сундуки, руководства, книги, враги и другое
 - **Привязаны к карте** - метки двигаются и масштабируются вместе с картой, их размер совпадает с метками игры
 - **Название при наведении** - наведите курсор на метку, чтобы увидеть название и категорию
 - **Отметить выполненным** - левый клик по метке, она становится бледной; повторный левый клик отменяет
@@ -72,7 +72,7 @@
 1. **Найдите папку игры.** Это папка, в которой лежит `Dawnwalker.exe`. В Steam: правый клик по игре, **Управление**, **Просмотреть локальные файлы**.
 2. **Проверьте UE4SS.** Откройте `Dawnwalker\Binaries\Win64`. Если там есть папка `ue4ss`, UE4SS установлен: переходите к шагу 4.
 3. **Установите UE4SS.** Скачайте `UE4SS_v3.0.1.zip` (не тот, что начинается с `zDEV`) со [страницы релизов UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases), откройте и скопируйте всё содержимое в `Dawnwalker\Binaries\Win64`.
-4. **Скачайте этот мод.** Возьмите `ValeSangoraMap-1.0.2.zip` на [странице релизов](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
+4. **Скачайте этот мод.** Возьмите `ValeSangoraMap-1.0.3.zip` на [странице релизов](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 5. **Скопируйте папку.** Откройте zip и скопируйте папку `ValeSangoraMap` в `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 
 Если всё верно, этот файл существует:
@@ -84,9 +84,9 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>Что внутри zip релиза</b></summary>
 
-`ValeSangoraMap-1.0.2.zip` это папка `src\ValeSangoraMap` этого репозитория в zip, без добавлений: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` и 95 значков PNG. Исполняемых файлов нет.
+`ValeSangoraMap-1.0.3.zip` это папка `src\ValeSangoraMap` этого репозитория в zip, без добавлений: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` и 77 значков PNG. Исполняемых файлов нет.
 
-SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+SHA-256: `d0eaca0fa1f305a2a1c67159d0a48d679f6029dd6efb653ebc07c4f2d4792204`
 
 SHA-256 старых версий указан на их страницах релизов.
 
@@ -143,7 +143,7 @@ SHA-256 старых версий указан на их страницах ре
   </td>
   <td align="center" width="50%">
     <img src="./design/screenshots/map-all-markers.jpg" width="100%" alt="Вся карта со всеми категориями и подсказкой с названием метки справа"/><br/>
-    <sub><b>Всё включено</b> · 1799 меток с названием при наведении</sub>
+    <sub><b>Всё включено</b> · 1816 меток с названием при наведении</sub>
   </td>
 </tr>
 </table>

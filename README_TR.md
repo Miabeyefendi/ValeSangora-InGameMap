@@ -7,7 +7,7 @@
 
 # ValeSangora-InGameMap
 
-**The Blood of Dawnwalker için 1799 topluluk işareti, oyunun kendi haritasında. UE4SS Lua modu: tek klasörü kopyala, oyna.**
+**The Blood of Dawnwalker için 1816 topluluk işareti, oyunun kendi haritasında. UE4SS Lua modu: tek klasörü kopyala, oyna.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-A78BFA?style=for-the-badge&logo=gnu&logoColor=white)](./LICENSE)
 [![Version](https://img.shields.io/github/v/release/Miabeyefendi/ValeSangora-InGameMap?style=for-the-badge&color=F59E0B&label=version)](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest)
@@ -38,7 +38,7 @@
 ## ✨ Öne çıkanlar
 
 - **Oyunun kendi haritasında** - her zamanki gibi M'ye bas, işaretler zaten orada, ikinci pencere yok
-- **1799 işaret, 79 kategori** - mabetler, kamplar, satıcılar, görevler, sandıklar, kılavuzlar, kitaplar, düşmanlar ve dahası
+- **1816 işaret, 62 kategori** - mabetler, kamplar, satıcılar, görevler, sandıklar, kılavuzlar, kitaplar, düşmanlar ve dahası
 - **Haritaya yapışık** - işaretler haritayla birlikte kayar ve yakınlaşır, boyutları oyunun pinleriyle aynı
 - **Üzerine gelince adı** - bir işaretin üstüne gel, adı ve kategorisi çıkar
 - **Tamamlandı işareti** - işarete sol tıkla, soluklaşır; tekrar sol tıkla geri al
@@ -72,7 +72,7 @@ Başka bir şey yok. Node.js yok, Python yok, .exe ya da .bat dosyası yok.
 1. **Oyun klasörünü bul.** İçinde `Dawnwalker.exe` olan klasör. Steam'de: oyuna sağ tıkla, **Yönet**, **Yerel dosyalara göz at**.
 2. **UE4SS'i kontrol et.** `Dawnwalker\Binaries\Win64` klasörünü aç. `ue4ss` adında bir klasör varsa UE4SS kurulu: 4. adıma geç.
 3. **UE4SS'i kur.** [UE4SS sürümlerinden](https://github.com/UE4SS-RE/RE-UE4SS/releases) `UE4SS_v3.0.1.zip` dosyasını indir (`zDEV` olanı değil), aç ve içindeki her şeyi `Dawnwalker\Binaries\Win64` içine kopyala.
-4. **Bu modu indir.** [Sürümler sayfasından](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) `ValeSangoraMap-1.0.2.zip` dosyasını al.
+4. **Bu modu indir.** [Sürümler sayfasından](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) `ValeSangoraMap-1.0.3.zip` dosyasını al.
 5. **Klasörü kopyala.** Zip'i aç ve `ValeSangoraMap` klasörünü `Dawnwalker\Binaries\Win64\ue4ss\Mods` içine kopyala.
 
 Doğru olduğunda bu dosya vardır:
@@ -84,9 +84,9 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>Sürüm zip dosyasında ne var</b></summary>
 
-`ValeSangoraMap-1.0.2.zip`, bu deponun `src\ValeSangoraMap` klasörünün zip hali, eklenen bir şey yok: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` ve 95 PNG ikon. Çalıştırılabilir dosya yok.
+`ValeSangoraMap-1.0.3.zip`, bu deponun `src\ValeSangoraMap` klasörünün zip hali, eklenen bir şey yok: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` ve 77 PNG ikon. Çalıştırılabilir dosya yok.
 
-SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+SHA-256: `d0eaca0fa1f305a2a1c67159d0a48d679f6029dd6efb653ebc07c4f2d4792204`
 
 Eski sürümlerin SHA-256 değeri kendi sürüm sayfalarında yazar.
 
@@ -143,7 +143,7 @@ Eski sürümlerin SHA-256 değeri kendi sürüm sayfalarında yazar.
   </td>
   <td align="center" width="50%">
     <img src="./design/screenshots/map-all-markers.jpg" width="100%" alt="Bütün kategoriler açık tam harita, sağda bir işaretin ad kutusu"/><br/>
-    <sub><b>Hepsi açık</b> · 1799 işaret, üzerine gelince adı</sub>
+    <sub><b>Hepsi açık</b> · 1816 işaret, üzerine gelince adı</sub>
   </td>
 </tr>
 </table>

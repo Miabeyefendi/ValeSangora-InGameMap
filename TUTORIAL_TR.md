@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap Rehberi
 
-**1.0.2 · Son güncelleme 2026-10-30**
+**1.0.3 · Son güncelleme 2026-10-30**
 
 [English](./TUTORIAL.md) · **Türkçe** · [Español](./TUTORIAL_ES.md) · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -34,7 +34,7 @@ istiyorsan [README](./README_TR.md) daha kısa.
 ### Ne yapar
 
 The Blood of Dawnwalker'ın haritası iyi ama topluluğun bulduğu toplanabilirlerin ve yerlerin
-çoğunu göstermiyor. Bu mod o işaretlerden 1799 tanesini (79 kategori, mabetlerden kamplara,
+çoğunu göstermiyor. Bu mod o işaretlerden 1816 tanesini (62 kategori, mabetlerden kamplara,
 kılavuzlardan kitaplara ve sandıklara kadar) oyunun kendi haritasına, M ile açtığın haritaya çizer.
 
 Bir işaretin üstüne gelip adını okuyabilir, sol tıkla tamamlandı yapabilir, bütün kategorileri
@@ -59,7 +59,7 @@ Bu bir UE4SS Lua modudur. Başlatılacak bir program yok, UE4SS dışında kurul
 
 ```
 markers.txt ──> harita açılır (M) ──> haritanın pin kabında tek katman
-                                       ├─ 1799 ikon, WorldToMapPosition ile yerleşir
+                                       ├─ 1816 ikon, WorldToMapPosition ile yerleşir
                                        ├─ yakınlaştırma: sadece katman ölçeği
                                        └─ üzerine gelme / tık: hangi ikon olduğunu oyun arayüzü söyler
 progress.txt <── işarete sol tık, kategoriye sağ tık
@@ -72,7 +72,7 @@ settings.txt <── filtre paneli
 |---|---|
 | `ValeSangoraMap\enabled.txt` | UE4SS'e modu yüklemesini söyler. Boş dosya. |
 | `ValeSangoraMap\Scripts\main.lua` | Modun tamamı |
-| `ValeSangoraMap\Data\markers.txt` | Kategoriler ve dünya konumlarıyla 1799 işaret |
+| `ValeSangoraMap\Data\markers.txt` | Kategoriler ve dünya konumlarıyla 1816 işaret |
 | `ValeSangoraMap\Icons\*.png` | Her kategori ve grup için bir ikon |
 | `ValeSangoraMap\progress.txt` | Mod yazar: tamamladığın işaretler |
 | `ValeSangoraMap\settings.txt` | Mod yazar: paneldeki seçimlerin |
@@ -100,7 +100,7 @@ Bu depoda mod klasörü `src\ValeSangoraMap` altındadır.
    [UE4SS sürümlerinden](https://github.com/UE4SS-RE/RE-UE4SS/releases) `UE4SS_v3.0.1.zip`
    dosyasını indir (`zDEV` değil) ve içindeki her şeyi `Win64` içine kopyala.
 3. [Sürümler sayfasından](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest)
-   `ValeSangoraMap-1.0.2.zip` dosyasını indir.
+   `ValeSangoraMap-1.0.3.zip` dosyasını indir.
 4. Zip içindeki `ValeSangoraMap` klasörünü `Dawnwalker\Binaries\Win64\ue4ss\Mods` içine kopyala.
 5. Oyunu başlat, bir kayıt yükle, **M**'ye bas.
 
@@ -109,7 +109,7 @@ Bu depoda mod klasörü `src\ValeSangoraMap` altındadır.
 Oyun açıldıktan sonra `ue4ss\Mods\ValeSangoraMap\vsm.log` dosyasını aç. İçinde şunlar olur:
 
 ```
-version 1.0.2, loaded 79 categories, 1799 markers
+version 1.0.3, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -117,7 +117,7 @@ ready, open the M map
 Haritayı bir kez açınca şu satırlar gelir:
 
 ```
-layer created at zoom ..., building 1799 markers
+layer created at zoom ..., building 1816 markers
 all markers built
 ```
 
@@ -177,7 +177,7 @@ Panelin altında. Fare işlemlerinin kısa listesi, kimse ezberlemek zorunda kal
 
 ### Oyun haritasında işaretler
 
-**Ne yapar.** M haritasına 1799 topluluk işareti çizer.
+**Ne yapar.** M haritasına 1816 topluluk işareti çizer.
 
 **Nasıl çalışır.** Haritanın pin kabına tek katman eklenir. Konumlar oyunun kendi dünyadan
 haritaya dönüşümünden gelir, bu yüzden oyunun pinleriyle hizalıdır. Kurulum yaklaşık yarım
@@ -234,7 +234,7 @@ geri alınır.
 **Ne yapar.** Grupları ve kategorileri gösterir ya da gizler; Hepsi, Bitenler ya da Devam
 edenler seçilir.
 
-**Nasıl çalışır.** Değişiklikler kare başına 300 ikona uygulanır, 1799 değişiklik bile birkaç
+**Nasıl çalışır.** Değişiklikler kare başına 300 ikona uygulanır, 1816 değişiklik bile birkaç
 kare sürer. Seçimler `settings.txt` dosyasına kaydedilir.
 
 **Nasıl kullanılır.** Paneldeki satırlara ve butonlara sol tıkla.
