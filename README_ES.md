@@ -7,7 +7,7 @@
 
 # ValeSangora-InGameMap
 
-**1799 marcadores de la comunidad para The Blood of Dawnwalker, dibujados en el propio mapa del juego. Un mod Lua para UE4SS: copia una carpeta y juega.**
+**1816 marcadores de la comunidad para The Blood of Dawnwalker, dibujados en el propio mapa del juego. Un mod Lua para UE4SS: copia una carpeta y juega.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-A78BFA?style=for-the-badge&logo=gnu&logoColor=white)](./LICENSE)
 [![Version](https://img.shields.io/github/v/release/Miabeyefendi/ValeSangora-InGameMap?style=for-the-badge&color=F59E0B&label=version)](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest)
@@ -38,7 +38,7 @@
 ## ✨ Lo destacado
 
 - **En el propio mapa del juego** - pulsa M como siempre, los marcadores ya están ahí, sin segunda ventana
-- **1799 marcadores, 79 categorías** - santuarios, campamentos, vendedores, misiones, cofres, manuales, libros, enemigos y más
+- **1816 marcadores, 62 categorías** - santuarios, campamentos, vendedores, misiones, cofres, manuales, libros, enemigos y más
 - **Pegados al mapa** - los marcadores se mueven y hacen zoom con el mapa, su tamaño coincide con los pines del juego
 - **Nombre al pasar el ratón** - apunta a un marcador para leer su nombre y categoría
 - **Marcar como hecho** - clic izquierdo en un marcador y se atenúa; otro clic izquierdo lo deshace
@@ -72,7 +72,7 @@ Nada más. Sin Node.js, sin Python, sin archivos .exe ni .bat.
 1. **Encuentra la carpeta del juego.** Es la carpeta que contiene `Dawnwalker.exe`. En Steam: clic derecho en el juego, **Administrar**, **Ver archivos locales**.
 2. **Comprueba UE4SS.** Abre `Dawnwalker\Binaries\Win64`. Si hay una carpeta llamada `ue4ss`, UE4SS está instalado: ve al paso 4.
 3. **Instala UE4SS.** Descarga `UE4SS_v3.0.1.zip` (no el de `zDEV`) desde las [versiones de UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases), ábrelo y copia todo su contenido en `Dawnwalker\Binaries\Win64`.
-4. **Descarga este mod.** Obtén `ValeSangoraMap-1.0.2.zip` en la [página de versiones](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
+4. **Descarga este mod.** Obtén `ValeSangoraMap-1.0.3.zip` en la [página de versiones](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 5. **Copia la carpeta.** Abre el zip y copia la carpeta `ValeSangoraMap` en `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 
 Si está bien, este archivo existe:
@@ -84,9 +84,9 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>Qué contiene el zip de la versión</b></summary>
 
-`ValeSangoraMap-1.0.2.zip` es la carpeta `src\ValeSangoraMap` de este repositorio comprimida, sin nada añadido: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` y 95 iconos PNG. Ningún archivo ejecutable.
+`ValeSangoraMap-1.0.3.zip` es la carpeta `src\ValeSangoraMap` de este repositorio comprimida, sin nada añadido: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` y 77 iconos PNG. Ningún archivo ejecutable.
 
-SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+SHA-256: `d0eaca0fa1f305a2a1c67159d0a48d679f6029dd6efb653ebc07c4f2d4792204`
 
 Las versiones anteriores muestran su propio SHA-256 en su página de versión.
 
@@ -143,7 +143,7 @@ Las versiones anteriores muestran su propio SHA-256 en su página de versión.
   </td>
   <td align="center" width="50%">
     <img src="./design/screenshots/map-all-markers.jpg" width="100%" alt="El mapa completo con todas las categorías visibles y el nombre de un marcador a la derecha"/><br/>
-    <sub><b>Todo activado</b> · 1799 marcadores con nombre al pasar el ratón</sub>
+    <sub><b>Todo activado</b> · 1816 marcadores con nombre al pasar el ratón</sub>
   </td>
 </tr>
 </table>

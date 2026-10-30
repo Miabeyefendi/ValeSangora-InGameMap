@@ -2,7 +2,7 @@
 
 # 📖 Guía de ValeSangora-InGameMap
 
-**1.0.2 · Última actualización 2026-10-30**
+**1.0.3 · Última actualización 2026-10-30**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · **Español** · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -34,7 +34,7 @@ qué cambia realmente cada ajuste. Si solo quieres instalarlo y ejecutarlo, el
 ### Qué hace
 
 El mapa de The Blood of Dawnwalker es bueno, pero no muestra la mayoría de coleccionables y
-lugares que ha encontrado la comunidad. Este mod toma 1799 de esos marcadores (79 categorías,
+lugares que ha encontrado la comunidad. Este mod toma 1816 de esos marcadores (62 categorías,
 desde santuarios y campamentos hasta manuales, libros y cofres) y los dibuja en el propio mapa
 del juego, el que abres con M.
 
@@ -61,7 +61,7 @@ Es un mod Lua para UE4SS. No hay ningún programa que iniciar ni nada que instal
 
 ```
 markers.txt ──> se abre el mapa (M) ──> una capa en el contenedor de pines del mapa
-                                         ├─ 1799 iconos, colocados con WorldToMapPosition
+                                         ├─ 1816 iconos, colocados con WorldToMapPosition
                                          ├─ zoom: solo la escala de la capa
                                          └─ ratón / clic: la interfaz del juego dice qué icono
 progress.txt <── clic izquierdo en un marcador, clic derecho en una categoría
@@ -74,7 +74,7 @@ settings.txt <── panel de filtros
 |---|---|
 | `ValeSangoraMap\enabled.txt` | Indica a UE4SS que cargue el mod. Archivo vacío. |
 | `ValeSangoraMap\Scripts\main.lua` | Todo el mod |
-| `ValeSangoraMap\Data\markers.txt` | Categorías y los 1799 marcadores con posiciones en el mundo |
+| `ValeSangoraMap\Data\markers.txt` | Categorías y los 1816 marcadores con posiciones en el mundo |
 | `ValeSangoraMap\Icons\*.png` | Un icono por categoría y grupo |
 | `ValeSangoraMap\progress.txt` | Lo escribe el mod: tus marcadores terminados |
 | `ValeSangoraMap\settings.txt` | Lo escribe el mod: tus elecciones del panel |
@@ -102,7 +102,7 @@ En este repositorio la carpeta del mod es `src\ValeSangoraMap`.
 2. Abre `Dawnwalker\Binaries\Win64`. Si no hay carpeta `ue4ss`, descarga `UE4SS_v3.0.1.zip`
    (no `zDEV`) desde las [versiones de UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases) y
    copia todo su contenido en `Win64`.
-3. Descarga `ValeSangoraMap-1.0.2.zip` desde la
+3. Descarga `ValeSangoraMap-1.0.3.zip` desde la
    [página de versiones](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Copia la carpeta `ValeSangoraMap` del zip en `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Inicia el juego, carga una partida, pulsa **M**.
@@ -112,7 +112,7 @@ En este repositorio la carpeta del mod es `src\ValeSangoraMap`.
 Abre `ue4ss\Mods\ValeSangoraMap\vsm.log` después de iniciar el juego. Contiene:
 
 ```
-version 1.0.2, loaded 79 categories, 1799 markers
+version 1.0.3, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -120,7 +120,7 @@ ready, open the M map
 Después de abrir el mapa una vez, siguen estas líneas:
 
 ```
-layer created at zoom ..., building 1799 markers
+layer created at zoom ..., building 1816 markers
 all markers built
 ```
 
@@ -182,7 +182,7 @@ recordarlas.
 
 ### Marcadores en el mapa del juego
 
-**Qué hace.** Dibuja 1799 marcadores de la comunidad en el mapa de la tecla M.
+**Qué hace.** Dibuja 1816 marcadores de la comunidad en el mapa de la tecla M.
 
 **Cómo funciona.** Se añade una capa al contenedor de pines del mapa. Las posiciones salen de la
 función del propio juego que convierte el mundo en mapa, por eso coinciden con los pines del
@@ -239,7 +239,7 @@ pasa a no hecho.
 
 **Qué hace.** Muestra u oculta grupos y categorías, y elige Todos, Terminados o Pendientes.
 
-**Cómo funciona.** Los cambios se aplican a 300 iconos por fotograma, así que incluso 1799
+**Cómo funciona.** Los cambios se aplican a 300 iconos por fotograma, así que incluso 1816
 cambios tardan pocos fotogramas. Las elecciones se guardan en `settings.txt`.
 
 **Cómo se usa.** Clic izquierdo en las filas y botones del panel.

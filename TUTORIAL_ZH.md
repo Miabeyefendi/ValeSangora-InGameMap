@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap 教程
 
-**1.0.2 · 最后更新 2026-10-30**
+**1.0.3 · 最后更新 2026-10-30**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · **简体中文** · [Русский](./TUTORIAL_RU.md)
 
@@ -33,7 +33,7 @@
 ### 它做什么
 
 The Blood of Dawnwalker 的地图不错，但不显示社区找到的大部分收集品和地点。本模组取其中
-1799 个标记（79 个分类，从神龛、营地到手册、书籍和宝箱），画在游戏自己的地图上，也就是按 M
+1816 个标记（62 个分类，从神龛、营地到手册、书籍和宝箱），画在游戏自己的地图上，也就是按 M
 打开的那张。
 
 你可以把鼠标指向标记查看名称，左键点击标记为已完成，隐藏整个分类，让已完成的标记变淡或
@@ -56,7 +56,7 @@ The Blood of Dawnwalker 的地图不错，但不显示社区找到的大部分�
 
 ```
 markers.txt ──> 打开地图 (M) ──> 地图图钉容器中的一个图层
-                                 ├─ 1799 个图标，用 WorldToMapPosition 放置
+                                 ├─ 1816 个图标，用 WorldToMapPosition 放置
                                  ├─ 缩放：只改图层比例
                                  └─ 悬停 / 点击：由游戏界面告知是哪个图标
 progress.txt <── 左键点击标记、右键点击分类
@@ -69,7 +69,7 @@ settings.txt <── 筛选面板
 |---|---|
 | `ValeSangoraMap\enabled.txt` | 告诉 UE4SS 加载本模组。空文件。 |
 | `ValeSangoraMap\Scripts\main.lua` | 整个模组 |
-| `ValeSangoraMap\Data\markers.txt` | 分类和 1799 个带世界坐标的标记 |
+| `ValeSangoraMap\Data\markers.txt` | 分类和 1816 个带世界坐标的标记 |
 | `ValeSangoraMap\Icons\*.png` | 每个分类和分组一个图标 |
 | `ValeSangoraMap\progress.txt` | 模组写入：你已完成的标记 |
 | `ValeSangoraMap\settings.txt` | 模组写入：你在面板中的选择 |
@@ -97,7 +97,7 @@ settings.txt <── 筛选面板
    [UE4SS 发布页](https://github.com/UE4SS-RE/RE-UE4SS/releases) 下载 `UE4SS_v3.0.1.zip`
    （不是 `zDEV`），把里面的全部内容复制到 `Win64`。
 3. 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载
-   `ValeSangoraMap-1.0.2.zip`。
+   `ValeSangoraMap-1.0.3.zip`。
 4. 把 zip 中的 `ValeSangoraMap` 文件夹复制到 `Dawnwalker\Binaries\Win64\ue4ss\Mods`。
 5. 启动游戏，读取存档，按 **M**。
 
@@ -106,7 +106,7 @@ settings.txt <── 筛选面板
 游戏启动后打开 `ue4ss\Mods\ValeSangoraMap\vsm.log`。其中包含：
 
 ```
-version 1.0.2, loaded 79 categories, 1799 markers
+version 1.0.3, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -114,7 +114,7 @@ ready, open the M map
 第一次打开地图后，会出现这些行：
 
 ```
-layer created at zoom ..., building 1799 markers
+layer created at zoom ..., building 1816 markers
 all markers built
 ```
 
@@ -173,7 +173,7 @@ all markers built
 
 ### 游戏地图上的标记
 
-**做什么。** 在 M 地图上画出 1799 个社区标记。
+**做什么。** 在 M 地图上画出 1816 个社区标记。
 
 **怎么运作。** 在地图的图钉容器里加一个图层。位置来自游戏自带的世界到地图转换函数，因此与
 游戏图钉对齐。构建约需半秒（每帧 60 个）。缩放只改变图层比例。
@@ -226,7 +226,7 @@ all markers built
 
 **做什么。** 显示或隐藏分组和分类，并选择 全部、已完成 或 进行中。
 
-**怎么运作。** 变化每帧应用到 300 个图标，即使 1799 个变化也只需几帧。选择保存在
+**怎么运作。** 变化每帧应用到 300 个图标，即使 1816 个变化也只需几帧。选择保存在
 `settings.txt`。
 
 **怎么用。** 左键点击面板中的行和按钮。

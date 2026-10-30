@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap Tutorial
 
-**1.0.2 · Last updated 2026-10-30**
+**1.0.3 · Last updated 2026-10-30**
 
 **English** · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -34,7 +34,7 @@ the [README](./README.md) is shorter.
 ### What it does
 
 The Blood of Dawnwalker has a good map, but it does not show most of the collectibles and
-places that the community has found. This mod takes 1799 of those markers (79 categories,
+places that the community has found. This mod takes 1816 of those markers (62 categories,
 from shrines and camps to manuals, books and chests) and draws them on the game's own map,
 the one you open with M.
 
@@ -61,7 +61,7 @@ It is a UE4SS Lua mod. There is no program to start and nothing to install besid
 
 ```
 markers.txt ──> map opens (M) ──> one layer in the map's pin container
-                                   ├─ 1799 icons, placed with WorldToMapPosition
+                                   ├─ 1816 icons, placed with WorldToMapPosition
                                    ├─ zoom: layer scale only
                                    └─ hover / click: the game UI says which icon
 progress.txt <── left click on a marker, right click on a category
@@ -74,7 +74,7 @@ settings.txt <── filter panel
 |---|---|
 | `ValeSangoraMap\enabled.txt` | Tells UE4SS to load the mod. Empty file. |
 | `ValeSangoraMap\Scripts\main.lua` | The whole mod |
-| `ValeSangoraMap\Data\markers.txt` | Categories and the 1799 markers with world positions |
+| `ValeSangoraMap\Data\markers.txt` | Categories and the 1816 markers with world positions |
 | `ValeSangoraMap\Icons\*.png` | One icon per category and group |
 | `ValeSangoraMap\progress.txt` | Written by the mod: your finished markers |
 | `ValeSangoraMap\settings.txt` | Written by the mod: your panel choices |
@@ -101,7 +101,7 @@ In this repository the mod folder is `src\ValeSangoraMap`.
 2. Open `Dawnwalker\Binaries\Win64`. If there is no `ue4ss` folder, download `UE4SS_v3.0.1.zip`
    (not `zDEV`) from the [UE4SS releases](https://github.com/UE4SS-RE/RE-UE4SS/releases) and
    copy everything in it into `Win64`.
-3. Download `ValeSangoraMap-1.0.2.zip` from the
+3. Download `ValeSangoraMap-1.0.3.zip` from the
    [releases page](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Copy the `ValeSangoraMap` folder from the zip into `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Start the game, load a save, press **M**.
@@ -111,7 +111,7 @@ In this repository the mod folder is `src\ValeSangoraMap`.
 Open `ue4ss\Mods\ValeSangoraMap\vsm.log` after the game started. It contains:
 
 ```
-version 1.0.2, loaded 79 categories, 1799 markers
+version 1.0.3, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -119,7 +119,7 @@ ready, open the M map
 After you open the map once, these lines follow:
 
 ```
-layer created at zoom ..., building 1799 markers
+layer created at zoom ..., building 1816 markers
 all markers built
 ```
 
@@ -179,7 +179,7 @@ Under the panel. A short list of the mouse actions, so nobody has to remember th
 
 ### Markers on the game map
 
-**What it does.** Draws 1799 community markers on the M map.
+**What it does.** Draws 1816 community markers on the M map.
 
 **How it works.** One layer is added to the map's pin container. Positions come from the
 game's own world-to-map function, so they line up with the game's pins. Building takes about
@@ -235,7 +235,7 @@ already done, all of it becomes not done.
 
 **What it does.** Shows or hides groups and categories, and chooses All, Finished or Ongoing.
 
-**How it works.** Changes are applied to 300 icons per frame, so even 1799 changes take only a
+**How it works.** Changes are applied to 300 icons per frame, so even 1816 changes take only a
 few frames. Choices are saved in `settings.txt`.
 
 **How to use it.** Left click rows and buttons in the panel.

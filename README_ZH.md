@@ -7,7 +7,7 @@
 
 # ValeSangora-InGameMap
 
-**为 The Blood of Dawnwalker 准备的 1799 个社区标记，直接画在游戏自己的地图上。UE4SS Lua 模组：复制一个文件夹，开玩。**
+**为 The Blood of Dawnwalker 准备的 1816 个社区标记，直接画在游戏自己的地图上。UE4SS Lua 模组：复制一个文件夹，开玩。**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-A78BFA?style=for-the-badge&logo=gnu&logoColor=white)](./LICENSE)
 [![Version](https://img.shields.io/github/v/release/Miabeyefendi/ValeSangora-InGameMap?style=for-the-badge&color=F59E0B&label=version)](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest)
@@ -38,7 +38,7 @@
 ## ✨ 亮点
 
 - **就在游戏自己的地图上** - 照常按 M，标记已经在那里，不需要第二个窗口
-- **1799 个标记，79 个分类** - 神龛、营地、商人、任务、宝箱、手册、书籍、敌人等
+- **1816 个标记，62 个分类** - 神龛、营地、商人、任务、宝箱、手册、书籍、敌人等
 - **紧贴地图** - 标记随地图一起移动和缩放，大小与游戏自带的图钉一致
 - **悬停显示名称** - 鼠标指向标记即可看到名称和分类
 - **标记为已完成** - 左键点击标记，它会变淡；再次左键点击即可撤销
@@ -72,7 +72,7 @@
 1. **找到游戏文件夹。** 就是包含 `Dawnwalker.exe` 的文件夹。在 Steam 中：右键点击游戏，**管理**，**浏览本地文件**。
 2. **检查 UE4SS。** 打开 `Dawnwalker\Binaries\Win64`。如果有名为 `ue4ss` 的文件夹，说明 UE4SS 已安装：跳到第 4 步。
 3. **安装 UE4SS。** 从 [UE4SS 发布页](https://github.com/UE4SS-RE/RE-UE4SS/releases) 下载 `UE4SS_v3.0.1.zip`（不是 `zDEV` 开头的那个），打开后把里面的全部内容复制到 `Dawnwalker\Binaries\Win64`。
-4. **下载本模组。** 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载 `ValeSangoraMap-1.0.2.zip`。
+4. **下载本模组。** 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载 `ValeSangoraMap-1.0.3.zip`。
 5. **复制文件夹。** 打开 zip，把 `ValeSangoraMap` 文件夹复制到 `Dawnwalker\Binaries\Win64\ue4ss\Mods`。
 
 安装正确时，这个文件存在：
@@ -84,9 +84,9 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>发布 zip 里有什么</b></summary>
 
-`ValeSangoraMap-1.0.2.zip` 就是本仓库 `src\ValeSangoraMap` 文件夹的压缩包，没有额外内容：`enabled.txt`、`Scripts\main.lua`、`Data\markers.txt` 和 95 个 PNG 图标。没有可执行文件。
+`ValeSangoraMap-1.0.3.zip` 就是本仓库 `src\ValeSangoraMap` 文件夹的压缩包，没有额外内容：`enabled.txt`、`Scripts\main.lua`、`Data\markers.txt` 和 77 个 PNG 图标。没有可执行文件。
 
-SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+SHA-256: `d0eaca0fa1f305a2a1c67159d0a48d679f6029dd6efb653ebc07c4f2d4792204`
 
 旧版本的 SHA-256 写在各自的发布页上。
 
@@ -143,7 +143,7 @@ SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
   </td>
   <td align="center" width="50%">
     <img src="./design/screenshots/map-all-markers.jpg" width="100%" alt="显示所有分类的完整地图，右侧是一个标记的名称提示"/><br/>
-    <sub><b>全部开启</b> · 1799 个标记，悬停显示名称</sub>
+    <sub><b>全部开启</b> · 1816 个标记，悬停显示名称</sub>
   </td>
 </tr>
 </table>
