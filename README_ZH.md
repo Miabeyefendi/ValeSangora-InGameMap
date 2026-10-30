@@ -72,7 +72,7 @@
 1. **找到游戏文件夹。** 就是包含 `Dawnwalker.exe` 的文件夹。在 Steam 中：右键点击游戏，**管理**，**浏览本地文件**。
 2. **检查 UE4SS。** 打开 `Dawnwalker\Binaries\Win64`。如果有名为 `ue4ss` 的文件夹，说明 UE4SS 已安装：跳到第 4 步。
 3. **安装 UE4SS。** 从 [UE4SS 发布页](https://github.com/UE4SS-RE/RE-UE4SS/releases) 下载 `UE4SS_v3.0.1.zip`（不是 `zDEV` 开头的那个），打开后把里面的全部内容复制到 `Dawnwalker\Binaries\Win64`。
-4. **下载本模组。** 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载 `ValeSangoraMap-1.0.0.zip`。
+4. **下载本模组。** 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载 `ValeSangoraMap-1.0.2.zip`。
 5. **复制文件夹。** 打开 zip，把 `ValeSangoraMap` 文件夹复制到 `Dawnwalker\Binaries\Win64\ue4ss\Mods`。
 
 安装正确时，这个文件存在：
@@ -84,9 +84,11 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>发布 zip 里有什么</b></summary>
 
-`ValeSangoraMap-1.0.0.zip` 就是本仓库 `src\ValeSangoraMap` 文件夹的压缩包，没有额外内容：`enabled.txt`、`Scripts\main.lua`、`Data\markers.txt` 和 95 个 PNG 图标。没有可执行文件。
+`ValeSangoraMap-1.0.2.zip` 就是本仓库 `src\ValeSangoraMap` 文件夹的压缩包，没有额外内容：`enabled.txt`、`Scripts\main.lua`、`Data\markers.txt` 和 95 个 PNG 图标。没有可执行文件。
 
-SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+
+旧版本的 SHA-256 写在各自的发布页上。
 
 </details>
 

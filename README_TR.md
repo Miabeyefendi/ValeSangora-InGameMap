@@ -72,7 +72,7 @@ Başka bir şey yok. Node.js yok, Python yok, .exe ya da .bat dosyası yok.
 1. **Oyun klasörünü bul.** İçinde `Dawnwalker.exe` olan klasör. Steam'de: oyuna sağ tıkla, **Yönet**, **Yerel dosyalara göz at**.
 2. **UE4SS'i kontrol et.** `Dawnwalker\Binaries\Win64` klasörünü aç. `ue4ss` adında bir klasör varsa UE4SS kurulu: 4. adıma geç.
 3. **UE4SS'i kur.** [UE4SS sürümlerinden](https://github.com/UE4SS-RE/RE-UE4SS/releases) `UE4SS_v3.0.1.zip` dosyasını indir (`zDEV` olanı değil), aç ve içindeki her şeyi `Dawnwalker\Binaries\Win64` içine kopyala.
-4. **Bu modu indir.** [Sürümler sayfasından](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) `ValeSangoraMap-1.0.0.zip` dosyasını al.
+4. **Bu modu indir.** [Sürümler sayfasından](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) `ValeSangoraMap-1.0.2.zip` dosyasını al.
 5. **Klasörü kopyala.** Zip'i aç ve `ValeSangoraMap` klasörünü `Dawnwalker\Binaries\Win64\ue4ss\Mods` içine kopyala.
 
 Doğru olduğunda bu dosya vardır:
@@ -84,9 +84,11 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>Sürüm zip dosyasında ne var</b></summary>
 
-`ValeSangoraMap-1.0.0.zip`, bu deponun `src\ValeSangoraMap` klasörünün zip hali, eklenen bir şey yok: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` ve 95 PNG ikon. Çalıştırılabilir dosya yok.
+`ValeSangoraMap-1.0.2.zip`, bu deponun `src\ValeSangoraMap` klasörünün zip hali, eklenen bir şey yok: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` ve 95 PNG ikon. Çalıştırılabilir dosya yok.
 
-SHA-256: `f51329d7c55b0a6e72bbdd123679f0944c160a07246ee09012ba143835c0c780`
+SHA-256: `99b2794cab4a66ab9e40538a5104f15c435cfcb3ecaa11966790547005e570ee`
+
+Eski sürümlerin SHA-256 değeri kendi sürüm sayfalarında yazar.
 
 </details>
 

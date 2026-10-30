@@ -2,7 +2,7 @@
 
 # 📖 Руководство по ValeSangora-InGameMap
 
-**1.0.0 · Последнее обновление 2026-10-02**
+**1.0.2 · Последнее обновление 2026-10-30**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · [简体中文](./TUTORIAL_ZH.md) · **Русский**
 
@@ -101,7 +101,7 @@ settings.txt <── панель фильтров
 2. Откройте `Dawnwalker\Binaries\Win64`. Если папки `ue4ss` нет, скачайте `UE4SS_v3.0.1.zip`
    (не `zDEV`) со [страницы релизов UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases) и
    скопируйте всё его содержимое в `Win64`.
-3. Скачайте `ValeSangoraMap-1.0.0.zip` со
+3. Скачайте `ValeSangoraMap-1.0.2.zip` со
    [страницы релизов](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Скопируйте папку `ValeSangoraMap` из zip в `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Запустите игру, загрузите сохранение, нажмите **M**.
@@ -111,7 +111,8 @@ settings.txt <── панель фильтров
 После запуска игры откройте `ue4ss\Mods\ValeSangoraMap\vsm.log`. В нём есть:
 
 ```
-loaded 79 categories, 1799 markers
+version 1.0.2, loaded 79 categories, 1799 markers
+update loop on the game thread, 33 ms
 ready, open the M map
 ```
 
