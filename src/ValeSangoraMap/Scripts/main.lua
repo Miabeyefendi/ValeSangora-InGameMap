@@ -184,7 +184,7 @@ do
         end
         f:close()
     end
-    note(string.format("version 1.0.4, loaded %d categories, %d markers", #catOrder, #markers))
+    note(string.format("version 2.0.0, loaded %d categories, %d markers", #catOrder, #markers))
 end
 
 -- Progress: ids of markers marked done, one per line (Mods\ValeSangoraMap\progress.txt)

@@ -72,7 +72,7 @@ Nothing else. No Node.js, no Python, no .exe or .bat file.
 1. **Find your game folder.** It is the folder with `Dawnwalker.exe` in it. On Steam: right click the game, **Manage**, **Browse local files**.
 2. **Check UE4SS.** Open `Dawnwalker\Binaries\Win64`. If there is a folder named `ue4ss`, UE4SS is installed: go to step 4.
 3. **Install UE4SS.** Download `UE4SS_v3.0.1.zip` (not the `zDEV` one) from the [UE4SS releases](https://github.com/UE4SS-RE/RE-UE4SS/releases), open it and copy everything inside into `Dawnwalker\Binaries\Win64`.
-4. **Download this mod.** Get `ValeSangoraMap-1.0.4.zip` from the [releases page](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
+4. **Download this mod.** Get `ValeSangoraMap-2.0.0.zip` from the [releases page](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 5. **Copy the folder.** Open the zip and copy the `ValeSangoraMap` folder into `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 
 When it is right, this file exists:
@@ -84,9 +84,9 @@ Dawnwalker\Binaries\Win64\ue4ss\Mods\ValeSangoraMap\enabled.txt
 <details>
 <summary><b>What is in the release zip</b></summary>
 
-`ValeSangoraMap-1.0.4.zip` is the `src\ValeSangoraMap` folder of this repository, zipped, nothing added: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` and 77 PNG icons. No executable file.
+`ValeSangoraMap-2.0.0.zip` is the `src\ValeSangoraMap` folder of this repository, zipped, nothing added: `enabled.txt`, `Scripts\main.lua`, `Data\markers.txt` and 77 PNG icons. No executable file.
 
-SHA-256: `fa2c75baa3b57bc99a97b950a865f100312bcba7b2f7971e6c9985ec32200a8f`
+SHA-256: `be009d32727afa7606044ed0e0cde057fd15ad5d61316f588adfd6ed569914da`
 
 Older releases show their own SHA-256 on their release page.
 

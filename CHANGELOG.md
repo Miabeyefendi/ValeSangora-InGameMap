@@ -29,7 +29,7 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 ---
 
-## [1.0.4] - 2026-11-02
+## [2.0.0] - 2026-11-02
 
 ### Added
 
@@ -106,7 +106,7 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 <!-- Keep this link block at the bottom and add one line per release. -->
 
-[1.0.4]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.4
+[2.0.0]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v2.0.0
 [1.0.3]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.3
 [1.0.2]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.1
