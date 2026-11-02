@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap Tutorial
 
-**1.0.3 · Last updated 2026-10-30**
+**1.0.4 · Last updated 2026-11-02**
 
 **English** · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -101,7 +101,7 @@ In this repository the mod folder is `src\ValeSangoraMap`.
 2. Open `Dawnwalker\Binaries\Win64`. If there is no `ue4ss` folder, download `UE4SS_v3.0.1.zip`
    (not `zDEV`) from the [UE4SS releases](https://github.com/UE4SS-RE/RE-UE4SS/releases) and
    copy everything in it into `Win64`.
-3. Download `ValeSangoraMap-1.0.3.zip` from the
+3. Download `ValeSangoraMap-1.0.4.zip` from the
    [releases page](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Copy the `ValeSangoraMap` folder from the zip into `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Start the game, load a save, press **M**.
@@ -111,7 +111,7 @@ In this repository the mod folder is `src\ValeSangoraMap`.
 Open `ue4ss\Mods\ValeSangoraMap\vsm.log` after the game started. It contains:
 
 ```
-version 1.0.3, loaded 62 categories, 1816 markers
+version 1.0.4, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -154,6 +154,7 @@ Top left of the map screen. Click its title bar to fold it.
 | `Show: All / Finished / Ongoing` | Every marker, only finished ones, or only the ones left |
 | `Finished markers: Faded / Hidden` | With Show on All: finished markers faded or not drawn |
 | `Icon size: + / -` | Marker size in 5% steps, 50% to 200% |
+| `Crowding: Smart / Off` | Smart: in a crowded place only the most important icon is drawn, zoom in to see the rest. Off: every icon is drawn |
 | Group row, left click | Show or hide the whole group |
 | Group row, right click | Mark the whole group done, right click again to undo |
 | `>` on a group row | Open its categories under it (one group at a time) |
@@ -270,6 +271,18 @@ every zoom. The panel setting multiplies it.
 
 ---
 
+### Crowding
+
+**What it does.** Keeps a crowded map readable. Where icons would cover each other, only the most important one is drawn, and the others step back until you zoom in.
+
+**How it works.** Two icons overlap when they are closer on screen than one icon side. Markers are taken in order of importance: the groups in the panel order (Landmarks first), finished markers last. A marker that falls too close to one already drawn steps back. The limit grows as you zoom out, so more icons step back there and come back when you zoom in. It is worked out once the zoom has settled, and again when you change a filter or mark something.
+
+**How to use it.** Click Smart or Off in the Crowding row. Smart is the default.
+
+**Limits.** Hidden icons have no name on hover. Turn Crowding Off to see every marker.
+
+---
+
 ### Crash guard
 
 **What it does.** Keeps a problem in the mod from piling up, and tells you where it was.
@@ -299,6 +312,7 @@ One setting per line, key and value separated by a tab. The panel writes it; you
 | `done` | `all`, `finished`, `ongoing` | `all` | The Show row |
 | `style` | `faded`, `hidden` | `faded` | The Finished markers row |
 | `size` | number, `0.50` to `2.00` | `1.00` | The Icon size row |
+| `thin` | `smart`, `off` | `smart` | The Crowding row |
 | `offcat` | category key | none | One line per hidden category |
 
 ### progress.txt
@@ -312,6 +326,11 @@ One setting per line, key and value separated by a tab. The panel writes it; you
 Both files are in the mod folder, `ue4ss\Mods\ValeSangoraMap`. They are plain text. Edit them
 only while the game is closed, the mod writes them while it runs. Back up `progress.txt` to
 keep your progress. Neither file holds any account data.
+
+If Windows does not let the mod write in its own folder (a game installed under Program Files, for
+instance), the mod keeps its files in `%LOCALAPPDATA%\Dawnwalker\Saved` instead, named
+`ValeSangora_progress.txt`, `ValeSangora_settings.txt` and so on. The first lines of `vsm.log` say which
+folder is in use. Once the files exist in one place, they stay there.
 
 ---
 

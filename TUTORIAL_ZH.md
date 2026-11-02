@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap 教程
 
-**1.0.3 · 最后更新 2026-10-30**
+**1.0.4 · 最后更新 2026-11-02**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · [Español](./TUTORIAL_ES.md) · **简体中文** · [Русский](./TUTORIAL_RU.md)
 
@@ -97,7 +97,7 @@ settings.txt <── 筛选面板
    [UE4SS 发布页](https://github.com/UE4SS-RE/RE-UE4SS/releases) 下载 `UE4SS_v3.0.1.zip`
    （不是 `zDEV`），把里面的全部内容复制到 `Win64`。
 3. 从 [发布页](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest) 下载
-   `ValeSangoraMap-1.0.3.zip`。
+   `ValeSangoraMap-1.0.4.zip`。
 4. 把 zip 中的 `ValeSangoraMap` 文件夹复制到 `Dawnwalker\Binaries\Win64\ue4ss\Mods`。
 5. 启动游戏，读取存档，按 **M**。
 
@@ -106,7 +106,7 @@ settings.txt <── 筛选面板
 游戏启动后打开 `ue4ss\Mods\ValeSangoraMap\vsm.log`。其中包含：
 
 ```
-version 1.0.3, loaded 62 categories, 1816 markers
+version 1.0.4, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -148,6 +148,7 @@ all markers built
 | `Show: All / Finished / Ongoing` | 全部、只看已完成、或只看剩下的 |
 | `Finished markers: Faded / Hidden` | Show 为 All 时：已完成的变淡或不绘制 |
 | `Icon size: + / -` | 标记大小，每次 5%，50% 到 200% |
+| `Crowding: Smart / Off` | Smart：拥挤的地方只画最重要的图标，放大后可看到其余。Off：画出所有图标 |
 | 分组行，左键 | 显示或隐藏整个分组 |
 | 分组行，右键 | 整个分组标记为已完成，再右键撤销 |
 | 分组行上的 `>` | 在下方展开它的分类（一次一个分组） |
@@ -259,6 +260,18 @@ all markers built
 
 ---
 
+### 拥挤处理（Crowding）
+
+**做什么。** 让拥挤的地图保持可读。图标会互相遮挡的地方，只画最重要的一个，其余的退到后面，直到你放大。
+
+**怎么运作。** 两个图标在屏幕上的距离小于一个图标的边长时就算重叠。标记按重要性依次处理：分组按面板顺序（先 Landmarks），已完成的最后。离已画出的图标太近的标记会退后。缩小时限制变大，退后的图标更多，放大后会回来。缩放停下后计算一次，更改筛选或标记完成时会再算。
+
+**怎么用。** 点击 Crowding 行的 Smart 或 Off。默认是 Smart。
+
+**边界。** 退后的图标没有悬停名称。把 Crowding 设为 Off 即可看到所有标记。
+
+---
+
 ### 崩溃保护
 
 **做什么。** 防止模组的问题越积越多，并告诉你出在哪里。
@@ -287,6 +300,7 @@ all markers built
 | `done` | `all`、`finished`、`ongoing` | `all` | Show 行 |
 | `style` | `faded`、`hidden` | `faded` | Finished markers 行 |
 | `size` | 数字，`0.50` 到 `2.00` | `1.00` | Icon size 行 |
+| `thin` | `smart`、`off` | `smart` | Crowding 行 |
 | `offcat` | 分类键 | 无 | 每个隐藏的分类一行 |
 
 ### progress.txt
@@ -299,6 +313,10 @@ all markers built
 
 两个文件都在模组文件夹 `ue4ss\Mods\ValeSangoraMap` 中，是纯文本。只在游戏关闭时编辑，模组
 运行时会写入它们。备份 `progress.txt` 即可保留进度。两个文件都不含任何账号数据。
+
+如果 Windows 不允许模组在自己的文件夹里写入（例如游戏安装在 Program Files 下），模组会改为把文件保存在
+`%LOCALAPPDATA%\Dawnwalker\Saved`，文件名为 `ValeSangora_progress.txt`、`ValeSangora_settings.txt` 等。
+`vsm.log` 的开头几行会说明使用的是哪个文件夹。文件一旦在某处生成，就会一直留在那里。
 
 ---
 
