@@ -29,6 +29,24 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 ---
 
+## [2.0.0] - 2026-11-02
+
+### Added
+
+- Crowding: where icons would cover each other, only the most important one is drawn and the others step back until you zoom in. A new Crowding row in the panel switches it between Smart (default) and Off.
+- The log now prints how much of the game thread the mod uses, every 20 seconds while the map is open (`BUDGET`), and a line when the game stops calling the mod for a while (`FREEZE`). Lag reports can show where the time went. The log keeps its latest lines instead of stopping when full.
+
+### Fixed
+
+- If Windows does not let the mod write in its folder (a game installed under Program Files), progress and settings were lost without a word. They are now kept in `%LOCALAPPDATA%\Dawnwalker\Saved` and a failed write is logged.
+
+### Changed
+
+- The map is found by an event the game sends when it creates it, not by searching every object of the game every few seconds. The search runs once at the start and then only as a slow safety net. Idea from a pull request by Ner-Kun.
+- The map widget is identified by its full name and no longer by its memory address, which the game reuses.
+
+---
+
 ## [1.0.3] - 2026-10-30
 
 ### Added
@@ -88,6 +106,7 @@ All notable changes to **ValeSangora-InGameMap** are recorded here. The format f
 
 <!-- Keep this link block at the bottom and add one line per release. -->
 
+[2.0.0]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v2.0.0
 [1.0.3]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.3
 [1.0.2]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/tag/v1.0.1

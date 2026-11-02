@@ -2,7 +2,7 @@
 
 # 📖 ValeSangora-InGameMap Rehberi
 
-**1.0.3 · Son güncelleme 2026-10-30**
+**2.0.0 · Son güncelleme 2026-11-02**
 
 [English](./TUTORIAL.md) · **Türkçe** · [Español](./TUTORIAL_ES.md) · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -100,7 +100,7 @@ Bu depoda mod klasörü `src\ValeSangoraMap` altındadır.
    [UE4SS sürümlerinden](https://github.com/UE4SS-RE/RE-UE4SS/releases) `UE4SS_v3.0.1.zip`
    dosyasını indir (`zDEV` değil) ve içindeki her şeyi `Win64` içine kopyala.
 3. [Sürümler sayfasından](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest)
-   `ValeSangoraMap-1.0.3.zip` dosyasını indir.
+   `ValeSangoraMap-2.0.0.zip` dosyasını indir.
 4. Zip içindeki `ValeSangoraMap` klasörünü `Dawnwalker\Binaries\Win64\ue4ss\Mods` içine kopyala.
 5. Oyunu başlat, bir kayıt yükle, **M**'ye bas.
 
@@ -109,7 +109,7 @@ Bu depoda mod klasörü `src\ValeSangoraMap` altındadır.
 Oyun açıldıktan sonra `ue4ss\Mods\ValeSangoraMap\vsm.log` dosyasını aç. İçinde şunlar olur:
 
 ```
-version 1.0.3, loaded 62 categories, 1816 markers
+version 2.0.0, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -152,6 +152,7 @@ Harita ekranının sol üstünde. Katlamak için başlık çubuğuna tıkla.
 | `Show: All / Finished / Ongoing` | Hepsi, sadece bitenler ya da sadece kalanlar |
 | `Finished markers: Faded / Hidden` | Show All iken bitenler soluk ya da hiç çizilmez |
 | `Icon size: + / -` | İşaret boyutu, %5 adımla, %50 ile %200 arası |
+| `Crowding: Smart / Off` | Smart: kalabalık yerde sadece en önemli ikon çizilir, kalanını görmek için yakınlaştır. Off: her ikon çizilir |
 | Grup satırı, sol tık | Bütün grubu göster ya da gizle |
 | Grup satırı, sağ tık | Bütün grubu tamamla, tekrar sağ tık geri al |
 | Grup satırında `>` | Kategorilerini altında aç (aynı anda tek grup) |
@@ -268,6 +269,18 @@ haritada ölçülür. Paneldeki ayar onu çarpar.
 
 ---
 
+### Kalabalık (Crowding)
+
+**Ne yapar.** Kalabalık haritayı okunur tutar. İkonların birbirini örteceği yerde sadece en önemlisi çizilir, diğerleri sen yakınlaştırana kadar geri çekilir.
+
+**Nasıl çalışır.** İki ikon, ekranda bir ikon boyundan yakınsa üst üste biner. İşaretler önem sırasıyla alınır: panelin grup sırası (önce Landmarks), biten işaretler en sonda. Zaten çizilmiş bir ikona çok yakın düşen işaret geri çekilir. Sınır uzaklaştıkça büyür, orada daha çok ikon geri çekilir ve yakınlaştırınca geri gelir. Yakınlaştırma durduktan sonra, bir filtreyi değiştirince ya da bir şey işaretleyince yeniden hesaplanır.
+
+**Nasıl kullanılır.** Crowding satırında Smart ya da Off'a tıkla. Varsayılan Smart.
+
+**Sınırları.** Geri çekilen ikonların üzerine gelince ad çıkmaz. Her markeri görmek için Crowding'i Off yap.
+
+---
+
 ### Çökme koruması
 
 **Ne yapar.** Moddaki bir sorunun birikmesini önler ve nerede olduğunu söyler.
@@ -298,6 +311,7 @@ yazman gerekmez.
 | `done` | `all`, `finished`, `ongoing` | `all` | Show satırı |
 | `style` | `faded`, `hidden` | `faded` | Finished markers satırı |
 | `size` | sayı, `0.50` ile `2.00` arası | `1.00` | Icon size satırı |
+| `thin` | `smart`, `off` | `smart` | Crowding satırı |
 | `offcat` | kategori anahtarı | yok | Gizli her kategori için bir satır |
 
 ### progress.txt
@@ -311,6 +325,11 @@ yazman gerekmez.
 İki dosya da mod klasöründe, `ue4ss\Mods\ValeSangoraMap`. Düz metindir. Sadece oyun kapalıyken
 düzenle, mod çalışırken onları yazar. İlerlemeni korumak için `progress.txt` dosyasını yedekle.
 İkisinde de hesap bilgisi yok.
+
+Windows modun kendi klasörüne yazmasına izin vermezse (örneğin oyun Program Files altında kuruluysa),
+mod dosyalarını bunun yerine `%LOCALAPPDATA%\Dawnwalker\Saved` içinde tutar, adları
+`ValeSangora_progress.txt`, `ValeSangora_settings.txt` gibi başlar. Hangi klasörün kullanıldığını
+`vsm.log` dosyasının ilk satırları söyler. Dosyalar bir yerde oluştuktan sonra orada kalır.
 
 ---
 

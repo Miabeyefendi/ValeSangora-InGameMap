@@ -21,17 +21,81 @@ local BUILD_PER_TICK = 60     -- widgets created per tick while the layer is (re
 local RESIZE_PER_TICK = 300   -- icons resized per tick after a zoom change
 local TICK_MS = 33            -- update interval
 local TEXTURES_PER_TICK = 6   -- icon files loaded per tick while the layer is built (no single big hitch)
-local LOG_FILE = MOD .. "\\vsm.log"
+
+-- Where the files the mod WRITES live (progress, settings, log, guard). Next to the mod, unless
+-- Windows refuses writes there (a game installed under Program Files, GOG for instance): every
+-- write would then fail in silence and the progress would be lost at each start. In that case the
+-- files go to the game's own save folder, %LOCALAPPDATA%\Dawnwalker\Saved, named ValeSangora_*.
+-- Once files exist in one place, that is where they stay. Data and Icons are only read and always
+-- stay in the mod folder. (The recipe comes from a GOG player's report against another map mod.)
+local DATA = { root = MOD, prefix = "", where = "the mod folder", why = "" }
+do
+    local function exists(path)
+        local f = io.open(path, "r")
+        if f then f:close() return true end
+        return false
+    end
+    local app = os.getenv("LOCALAPPDATA")
+    local gameRoot = (app and app ~= "") and (app .. "\\Dawnwalker\\Saved") or nil
+    local gamePrefix = "ValeSangora_"
+    local useGame = false
+    if not gameRoot then
+        DATA.why = "LOCALAPPDATA is not set"
+    elseif exists(MOD .. "\\progress.txt") or exists(MOD .. "\\settings.txt") then
+        DATA.why = "files already there"
+    elseif exists(gameRoot .. "\\" .. gamePrefix .. "progress.txt") or exists(gameRoot .. "\\" .. gamePrefix .. "settings.txt") then
+        useGame, DATA.why = true, "files already there"
+    else
+        -- Lua cannot ask Windows whether a folder is writable: write a file and see. Both the write
+        -- and the close are checked.
+        local probe = MOD .. "\\write-test.tmp"
+        local wrote = false
+        local f = io.open(probe, "w")
+        if f then
+            local w = f:write("x") ~= nil
+            local c = f:close() == true
+            wrote = w and c
+            os.remove(probe)
+        end
+        if wrote then
+            DATA.why = "the mod folder can be written"
+        else
+            useGame, DATA.why = true, "Windows refuses writes in the mod folder"
+        end
+    end
+    if useGame then
+        DATA.root, DATA.prefix = gameRoot, gamePrefix
+        -- not the full path: it holds the Windows user name and logs get pasted into bug reports
+        DATA.where = "%LOCALAPPDATA%\\Dawnwalker\\Saved, files named " .. gamePrefix .. "*"
+    end
+end
+local function dataPath(name) return DATA.root .. "\\" .. DATA.prefix .. name end
+local LOG_FILE = dataPath("vsm.log")
 
 local function log(s) print("[ValeSangoraMap] " .. s .. "\n") end
 local logLines = {}
 local function note(s)
     log(s)
-    if #logLines >= 200 then return end
     logLines[#logLines + 1] = os.date("%H:%M:%S ") .. s
+    -- the first 40 lines (version, hooks) stay, then only the latest ones: a long session cannot fill
+    -- the log and silence it
+    if #logLines > 200 then table.remove(logLines, 41) end
     local f = io.open(LOG_FILE, "w")
     if f then f:write(table.concat(logLines, "\n") .. "\n"); f:close() end
 end
+
+-- write a whole file; a failure is written to the log once instead of losing data in silence
+local writeWarned = {}
+local function writeFile(path, text)
+    local f = io.open(path, "w")
+    if f then f:write(text); f:close() return true end
+    if not writeWarned[path] then
+        writeWarned[path] = true
+        note("cannot write " .. path:match("[^\\]+$"))
+    end
+    return false
+end
+note("data files in " .. DATA.where .. " (" .. DATA.why .. ")")
 
 -- ---------------------------------------------------------------------------------------------
 -- Pinned functions. UE4SS keeps a function we hand it (update loop, hooks, key binds) only as a
@@ -52,7 +116,7 @@ end
 -- leaves a breadcrumb in guard.txt ("idle" when nothing runs). If the game died during a step, the
 -- next start logs which one and runs that session in safe mode: smaller batches, slower clicks.
 -- ---------------------------------------------------------------------------------------------
-local GUARD = MOD .. "\\guard.txt"
+local GUARD = dataPath("guard.txt")
 local safeMode = false
 do
     local f = io.open(GUARD, "r")
@@ -120,11 +184,11 @@ do
         end
         f:close()
     end
-    note(string.format("version 1.0.3, loaded %d categories, %d markers", #catOrder, #markers))
+    note(string.format("version 2.0.0, loaded %d categories, %d markers", #catOrder, #markers))
 end
 
 -- Progress: ids of markers marked done, one per line (Mods\ValeSangoraMap\progress.txt)
-local PROGRESS = MOD .. "\\progress.txt"
+local PROGRESS = dataPath("progress.txt")
 local done = {}
 do
     local f = io.open(PROGRESS, "r")
@@ -134,8 +198,7 @@ local function saveProgress()
     local ids = {}
     for id in pairs(done) do ids[#ids + 1] = tostring(id) end
     table.sort(ids)
-    local f = io.open(PROGRESS, "w")
-    if f then f:write(table.concat(ids, "\n") .. "\n"); f:close() end
+    writeFile(PROGRESS, table.concat(ids, "\n") .. "\n")
 end
 
 -- ---------------------------------------------------------------------------------------------
@@ -156,24 +219,66 @@ local function isOpen(w)
     return ok and a
 end
 
--- The map widget is one persistent object. Once it has been seen on screen after a save load it is
--- only asked "are you open" (two cheap calls). FindAllOf walks every object of the game, so it runs
--- every 5 s only while no map has been seen yet, then once a minute as a safety net, and a slow
--- search is written to the log.
+-- The map widget is found by EVENT: the game announces every WBP_Map_C it constructs
+-- (NotifyOnNewObject, registered while the mod loads, which works on this class in this game).
+-- FindAllOf walks every object of the game and costs hundreds of ms, so it runs once at the start
+-- (a widget that already exists when the mod loads sends no event) and then only as a slow safety
+-- net while no map has been seen. Without the event call (older UE4SS) the old search every 5 s is
+-- used. A slow search is written to the log. The callback only stores the object and reads
+-- nothing: it may arrive while the object is still being constructed.
+local MAP_CLASS = "/Game/_Dawnwalker/UI/_Unified/GameHub/Map/WBP_Map.WBP_Map_C"
 local mapList, mapListAt = {}, 0
+local newMaps = {}                 -- announced by the game, taken over on the next update
 local mapSeen = false              -- a map widget was on screen since the last forget()
 local scanNotes, scanCount = 0, 0
+local onNewMap = pin(function(w) newMaps[#newMaps + 1] = w end)
+local watcherOk = type(NotifyOnNewObject) == "function" and pcall(NotifyOnNewObject, MAP_CLASS, onNewMap)
+note("map watcher " .. (watcherOk and "on" or "not available, searching every 5 s"))
+
+local function validRaw(w) return w:IsValid() end
+local function mapKnown(w)
+    local ok, n = pcall(nameRaw, w)
+    if not ok then return false end
+    for _, o in ipairs(mapList) do
+        local ok2, n2 = pcall(nameRaw, o)
+        if ok2 and n2 == n then return true end
+    end
+    return false
+end
+-- a widget joins the list when it is valid, not the class default object and not known already;
+-- widgets that died since are dropped. Identity is the full name, never the address: the game
+-- reuses the memory of destroyed objects.
+local function addMap(w)
+    local okv, v = pcall(validRaw, w)
+    if not (okv and v) then return end
+    local okn, n = pcall(nameRaw, w)
+    if not okn or n:find("Default__", 1, true) then return end
+    if mapKnown(w) then return end
+    local alive = {}
+    for _, o in ipairs(mapList) do
+        local ok3, v3 = pcall(validRaw, o)
+        if ok3 and v3 then alive[#alive + 1] = o end
+    end
+    alive[#alive + 1] = w
+    mapList = alive
+end
+local function takeNewMaps()
+    if #newMaps == 0 then return end
+    local got = newMaps
+    newMaps = {}
+    for _, w in ipairs(got) do addMap(w) end
+end
+
 local function openMap()
+    takeNewMaps()
     for _, w in ipairs(mapList) do
         if isOpen(w) then mapSeen = true return w end
     end
-    if os.clock() < mapListAt then return nil end
-    mapListAt = os.clock() + (mapSeen and 60 or 5)
+    local now = os.clock()
+    if now < mapListAt then return nil end
+    if watcherOk then mapListAt = now + (mapSeen and 3600 or 600) else mapListAt = now + (mapSeen and 60 or 5) end
     local t0 = os.clock()
-    mapList = {}
-    for _, w in ipairs(FindAllOf("WBP_Map_C") or {}) do
-        if w:IsValid() then mapList[#mapList + 1] = w end
-    end
+    for _, w in ipairs(FindAllOf("WBP_Map_C") or {}) do addMap(w) end
     scanCount = scanCount + 1
     local ms = (os.clock() - t0) * 1000
     if ms > 15 and scanNotes < 5 then
@@ -253,6 +358,8 @@ local function startLayer(map)
     for k in pairs(textures) do textures[k] = nil end
     L.serial = L.serial + 1
     L.map, L.mapAddr, L.items, L.built, L.resizeAt = map, addrOf(map), {}, 0, 1
+    local okn, nm = pcall(nameRaw, map)
+    L.mapName = okn and nm or nil
     L.z0 = map:GetCurrentZoom()
     L.zoom, L.sizeZoom = L.z0, L.z0
     L.affine = fitAffine(map)
@@ -261,6 +368,7 @@ local function startLayer(map)
     if old > 0 then note("removed " .. old .. " old marker layer(s)") end
     L.pending, L.applyAt, L.hits, L.hot, L.panel, L.panelBg = nil, nil, nil, nil, nil, nil
     L.panelSwept, L.scanLeft, L.hoverDirty, L.attachCheckAt, L.sigMoves = nil, 0, true, nil, nil
+    L.thinQ, L.thinQAt, L.thinDirty = nil, nil, true
     L.layer = construct("/Script/UMG.CanvasPanel", map.WidgetTree, "VSM_Layer_" .. L.serial)
     local slot = container:AddChildToCanvas(L.layer)
     slot:SetAutoSize(false)
@@ -279,9 +387,10 @@ end
 -- Filters, as in the web app: every category on/off (a parent row toggles all its children) and
 -- what to do with finished markers. Saved in settings.txt.
 -- ---------------------------------------------------------------------------------------------
-local SETTINGS = MOD .. "\\settings.txt"
+local SETTINGS = dataPath("settings.txt")
 local doneMode = "all"            -- all | finished | ongoing
 local doneStyle = "faded"         -- finished markers under All: faded | hidden
+local thinMode = "smart"          -- crowding: smart (in a crowd the most important icon stays) | off
 do
     local byTitle = {}
     for _, pr in ipairs(parentList) do byTitle[pr.title] = pr end
@@ -305,6 +414,8 @@ do
             if dm then doneMode = ({ faded = "all", shown = "all", hidden = "ongoing" })[dm] or dm end
             local st = line:match("^style\t(%a+)$")
             if st == "faded" or st == "hidden" then doneStyle = st end
+            local tm = line:match("^thin\t(%a+)$")
+            if tm == "smart" or tm == "off" then thinMode = tm end
             local sz = tonumber(line:match("^size\t([%d.]+)$") or "")
             if sz then iconScale = math.max(0.5, math.min(2, sz)) end
         end
@@ -312,17 +423,33 @@ do
     end
 end
 local function saveSettings()
-    local out = { "done\t" .. doneMode, "style\t" .. doneStyle, string.format("size\t%.2f", iconScale) }
+    local out = { "done\t" .. doneMode, "style\t" .. doneStyle, "thin\t" .. thinMode, string.format("size\t%.2f", iconScale) }
     for _, k in ipairs(catOrder) do if not cats[k].on then out[#out + 1] = "offcat\t" .. k end end
-    local f = io.open(SETTINGS, "w")
-    if f then f:write(table.concat(out, "\n") .. "\n"); f:close() end
+    writeFile(SETTINGS, table.concat(out, "\n") .. "\n")
 end
 
-local function shown(it)
+-- Crowding priority = the order of the groups in the panel (Landmarks first). The markers never
+-- change, so the order is made once: marker indices, most important group first.
+local prio = {}
+for i, pr in ipairs(parentList) do for _, k in ipairs(pr.children) do prio[k] = i end end
+local order = {}
+for i = 1, #markers do order[i] = i end
+table.sort(order, function(a, b)
+    local pa, pb = prio[markers[a].cat] or 99, prio[markers[b].cat] or 99
+    if pa ~= pb then return pa < pb end
+    return a < b
+end)
+
+-- what the filters allow
+local function filterShown(it)
     if not cats[it.m.cat].on then return false end
     if doneMode == "finished" then return done[it.m.id] == true end
     if doneMode == "ongoing" or doneStyle == "hidden" then return not done[it.m.id] end
     return true
+end
+-- what is really drawn: the filters, and no icon that stepped back in a crowd
+local function shown(it)
+    return not it.thin and filterShown(it)
 end
 
 local function applyRaw(img, vis, opacity)
@@ -336,6 +463,67 @@ local function applyItem(it)
 end
 local function applyAll()
     for i = 1, L.built do if L.items[i] then applyItem(L.items[i]) end end
+end
+
+-- CROWDING. Two icons overlap when their distance on screen is under one icon side. On screen the
+-- distance is layer distance * scale, and the icon side is always iconUnits(), so in layer units
+-- the limit is iconUnits() / scale: it grows as you zoom out, and more icons step back. Markers are
+-- taken in priority order (important groups first, finished markers last); one that falls within the
+-- limit of an icon already drawn steps back. A grid with cells of the limit's size keeps the cost
+-- at nine cells per icon. Returns the markers whose state changed.
+local function recomputeThin()
+    local items, n = L.items, L.built
+    local changed = {}
+    local floor = math.floor
+    local function set(it, thin)
+        if (it.thin == true) ~= thin then
+            it.thin = thin
+            changed[#changed + 1] = it
+        end
+    end
+    for i = 1, n do
+        local it = items[i]
+        if it and (thinMode ~= "smart" or not filterShown(it)) then set(it, false) end
+    end
+    if thinMode ~= "smart" then return changed end
+    local cell = iconUnits() / (L.zoom / L.z0)
+    if cell < 1 then cell = 1 end
+    local cell2 = cell * cell
+    local occ = {}
+    for pass = 1, 2 do                     -- pass 1: not finished, pass 2: finished
+        for _, i in ipairs(order) do
+            local it = items[i]
+            if it and filterShown(it) then
+                local isDone = done[it.m.id] == true
+                if (pass == 1) ~= isDone then
+                    local cx, cy = floor(it.lx / cell), floor(it.ly / cell)
+                    local close = false
+                    for ox = -1, 1 do
+                        for oy = -1, 1 do
+                            local bucket = occ[(cx + ox + 50000) * 100000 + (cy + oy + 50000)]
+                            if bucket then
+                                for b = 1, #bucket, 2 do
+                                    local dx, dy = it.lx - bucket[b], it.ly - bucket[b + 1]
+                                    if dx * dx + dy * dy < cell2 then close = true break end
+                                end
+                            end
+                            if close then break end
+                        end
+                        if close then break end
+                    end
+                    if not close then
+                        local key = (cx + 50000) * 100000 + (cy + 50000)
+                        local bucket = occ[key]
+                        if not bucket then bucket = {} occ[key] = bucket end
+                        bucket[#bucket + 1] = it.lx
+                        bucket[#bucket + 1] = it.ly
+                    end
+                    set(it, close)
+                end
+            end
+        end
+    end
+    return changed
 end
 
 local function buildOne(i, m)
@@ -369,6 +557,7 @@ local function buildStep()
         note("all markers built")
         crumb(nil)
         L.sizeZoom, L.settleAt = nil, os.clock()
+        L.thinDirty = true
     end
 end
 
@@ -380,6 +569,7 @@ local function followZoom()
         local s = z / L.z0
         L.layer:SetRenderScale({ X = s, Y = s })
         L.settleAt = os.clock() + 0.3
+        L.thinDirty = true
     end
 end
 
@@ -414,6 +604,7 @@ local function measurePins()
         iconBase = m
         L.sizeZoom = nil              -- forces a resize pass
         L.settleAt = L.settleAt or os.clock()
+        L.thinDirty = true            -- the icon side is the crowding limit
     end
 end
 
@@ -562,6 +753,7 @@ local function pendingStep()
     saveProgress()
     if L.panel then L.panelDirty = true end
     L.hoverDirty = true
+    L.thinDirty = true
     showTip(shown(it) and it or nil)
 end
 
@@ -680,6 +872,7 @@ local function refilter()
     saveSettings()
     L.applyAt = 1
     L.hoverDirty = true
+    L.thinDirty = true
     if L.hover then showTip(nil) end
 end
 
@@ -692,6 +885,7 @@ local function markAll(keys)
         saveProgress()
         L.applyAt = 1
         L.hoverDirty = true
+        L.thinDirty = true
         if L.hover then showTip(nil) end
     end
 end
@@ -726,7 +920,7 @@ local function buildPanel()
         rows[#rows + 1] = { parent = pr }
         if pr.key == L.openKey then for _, k in ipairs(pr.children) do rows[#rows + 1] = { cat = k, parent = pr } end end
     end
-    local listY = 262
+    local listY = 300
     local height = L.collapsed and 36 or (listY + #rows * ROW + 8)
     L.panelBg = rect(0, 0, PW, height, C.bg, true)        -- background, keeps clicks off the map
     frame(0, 0, PW, height, C.line)
@@ -765,13 +959,26 @@ local function buildPanel()
                 iconScale = math.max(0.5, math.min(2, math.floor((iconScale + d) * 100 + 0.5) / 100))
                 saveSettings()
                 L.sizeZoom, L.settleAt = nil, os.clock()
+                L.thinDirty = true
             end
         end
         button(bx, 202, 44, 26, "+", false, resize(0.05))
         text(bx + 82, 206, math.floor(iconScale * 100 + 0.5) .. "%", C.text, 13, 0.5)
         button(bx + 120, 202, 44, 26, "-", false, resize(-0.05))
+        -- Crowding   [Smart] [Off]
+        panelLine(236, "Crowding")
+        local function setThin(mode)
+            return function()
+                thinMode = mode
+                saveSettings()
+                L.thinDirty = true
+                L.hoverDirty = true
+            end
+        end
+        button(bx, 240, 80, 26, "Smart", thinMode == "smart", setThin("smart"))
+        button(bx + 84, 240, 80, 26, "Off", thinMode == "off", setThin("off"))
         -- Categories
-        text(PAD + 2, 240, "Categories", C.muted, 12)
+        text(PAD + 2, 278, "Categories", C.muted, 12)
 
         for i, row in ipairs(rows) do
             local y = listY + (i - 1) * ROW
@@ -813,6 +1020,7 @@ local function buildPanel()
             { "ON THE MAP", C.accent },
             { "Point at an icon: its name", C.text },
             { "Left click an icon: mark done / undo", C.text },
+            { "Crowding Smart: in a crowd the top icon stays", C.text },
             { "Right click stays the game's waypoint", C.muted },
         }
         local hy = height + 8
@@ -868,8 +1076,11 @@ local function forget(why)
     note("map state dropped: " .. (why or "map widget gone"))
     L.map, L.mapAddr, L.layer, L.items, L.built = nil, nil, nil, {}, 0
     L.hover, L.tip, L.panel, L.hits, L.hot, L.pending, L.panelBg = nil, nil, nil, nil, nil, nil, nil
-    L.applyAt, L.settleAt, L.sigMoves, L.scanLeft = nil, nil, nil, 0
-    mapList, mapListAt, mapSeen = {}, 0, false
+    L.applyAt, L.settleAt, L.sigMoves, L.scanLeft, L.thinQ = nil, nil, nil, 0, nil
+    -- The list of map widgets is kept: the game may go on using a widget that already exists after a
+    -- load (no new event then), and one it constructs is announced by the event.
+    mapSeen = false
+    if not watcherOk then mapListAt = 0 end
     for k in pairs(textures) do textures[k] = nil end
     crumb(nil)
 end
@@ -921,8 +1132,13 @@ local function tick()
     local needLayer = addr ~= L.mapAddr
     local now = os.clock()
     if not needLayer and now >= (L.attachCheckAt or 0) then
-        L.attachCheckAt = now + 1               -- the layer's parent is checked once a second
+        L.attachCheckAt = now + 1               -- once a second: the layer's parent and the widget's full name
         needLayer = not attached()
+        if not needLayer and L.mapName then
+            -- an address alone does not identify an object: the game reuses the memory of destroyed ones
+            local okn, nm = pcall(nameRaw, map)
+            if okn and nm ~= L.mapName then needLayer = true end
+        end
     end
     if needLayer then
         -- new map widget or a rebuilt pin layer (save load): start over
@@ -941,6 +1157,32 @@ local function tick()
         for i = L.applyAt, last do if L.items[i] then applyItem(L.items[i]) end end
         L.applyAt = (last < L.built) and last + 1 or nil
         if not L.applyAt then crumb(nil) end
+    end
+    if L.thinDirty and L.built >= #markers and not L.settleAt and not L.applyAt then
+        L.thinDirty = false
+        local okc, changed = pcall(recomputeThin)
+        if not okc then
+            countError("crowding", changed)
+        elseif #changed > 0 then
+            if L.thinQ then
+                for _, it in ipairs(changed) do L.thinQ[#L.thinQ + 1] = it end
+            else
+                L.thinQ, L.thinQAt = changed, 1
+            end
+            L.hoverDirty = true
+        end
+    end
+    if L.thinQ then
+        crumb("crowding update")
+        local q, from = L.thinQ, L.thinQAt
+        local last = math.min(#q, from + APPLY_PER_TICK - 1)
+        for k = from, last do applyItem(q[k]) end
+        if last >= #q then
+            L.thinQ, L.thinQAt = nil, nil
+            if not L.applyAt then crumb(nil) end
+        else
+            L.thinQAt = last + 1
+        end
     end
     pcall(pointerStep)
     pcall(panelHover)
@@ -1004,16 +1246,43 @@ local function tickAll()
     if mapActive and L.layer and L.map then clickStep() else clickWanted = nil end
 end
 
-local slowTicks = 0
+-- Cost accounting, printed as the raw numbers every 20 s while the map is open: how many ms of every
+-- second of game thread the update takes, its worst step, and how many steps ran of those expected.
+-- Far fewer steps than expected means the game did not call the mod (a freeze, a load), not that the
+-- mod worked little; a gap between two calls over 3x the interval is written as FREEZE (a few times).
+local slowTicks, freezeNotes = 0, 0
+local FREEZE_MS = math.max(TICK_MS * 3, 700)
+local budget = { start = os.clock(), ms = 0, worst = 0, n = 0, worked = 0, last = nil }
 local gameTick = pin(function()
     importsThisTick = 0
     local t0 = os.clock()
+    if budget.last then
+        local gap = (t0 - budget.last) * 1000
+        if gap >= FREEZE_MS and freezeNotes < 6 then
+            freezeNotes = freezeNotes + 1
+            note(string.format("FREEZE the game thread did not call the update for %.0f ms (expected %d)", gap, TICK_MS))
+        end
+    end
+    budget.last = t0
     local ok, err = pcall(tickAll)
     if not ok then countError("tick", err) end
-    local ms = (os.clock() - t0) * 1000
+    local t1 = os.clock()
+    local ms = (t1 - t0) * 1000
+    budget.ms = budget.ms + ms
+    budget.n = budget.n + 1
+    if ms > budget.worst then budget.worst = ms end
+    if mapActive then budget.worked = budget.worked + 1 end
     if ms > 40 and slowTicks < 8 then
         slowTicks = slowTicks + 1
         note(string.format("slow update: %.0f ms (markers built %d)", ms, L.built))
+    end
+    if t1 - budget.start >= 20 then
+        local sec = t1 - budget.start
+        if budget.worked > 0 then
+            note(string.format("BUDGET %.1f ms/s on the game thread | update peak %.0f ms, %d steps of %d expected",
+                budget.ms / sec, budget.worst, budget.n, math.floor(sec * 1000 / TICK_MS)))
+        end
+        budget.start, budget.ms, budget.worst, budget.n, budget.worked = t1, 0, 0, 0, 0
     end
 end)
 

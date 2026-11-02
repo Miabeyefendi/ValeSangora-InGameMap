@@ -2,7 +2,7 @@
 
 # 📖 Guía de ValeSangora-InGameMap
 
-**1.0.3 · Última actualización 2026-10-30**
+**2.0.0 · Última actualización 2026-11-02**
 
 [English](./TUTORIAL.md) · [Türkçe](./TUTORIAL_TR.md) · **Español** · [简体中文](./TUTORIAL_ZH.md) · [Русский](./TUTORIAL_RU.md)
 
@@ -102,7 +102,7 @@ En este repositorio la carpeta del mod es `src\ValeSangoraMap`.
 2. Abre `Dawnwalker\Binaries\Win64`. Si no hay carpeta `ue4ss`, descarga `UE4SS_v3.0.1.zip`
    (no `zDEV`) desde las [versiones de UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases) y
    copia todo su contenido en `Win64`.
-3. Descarga `ValeSangoraMap-1.0.3.zip` desde la
+3. Descarga `ValeSangoraMap-2.0.0.zip` desde la
    [página de versiones](https://github.com/Miabeyefendi/ValeSangora-InGameMap/releases/latest).
 4. Copia la carpeta `ValeSangoraMap` del zip en `Dawnwalker\Binaries\Win64\ue4ss\Mods`.
 5. Inicia el juego, carga una partida, pulsa **M**.
@@ -112,7 +112,7 @@ En este repositorio la carpeta del mod es `src\ValeSangoraMap`.
 Abre `ue4ss\Mods\ValeSangoraMap\vsm.log` después de iniciar el juego. Contiene:
 
 ```
-version 1.0.3, loaded 62 categories, 1816 markers
+version 2.0.0, loaded 62 categories, 1816 markers
 update loop on the game thread, 33 ms
 ready, open the M map
 ```
@@ -156,6 +156,7 @@ Arriba a la izquierda de la pantalla del mapa. Haz clic en su barra de título p
 | `Show: All / Finished / Ongoing` | Todos, solo los terminados o solo los que faltan |
 | `Finished markers: Faded / Hidden` | Con Show en All: terminados atenuados o sin dibujar |
 | `Icon size: + / -` | Tamaño de los marcadores en pasos del 5%, del 50% al 200% |
+| `Crowding: Smart / Off` | Smart: en un sitio concurrido solo se dibuja el icono más importante, acércate para ver el resto. Off: se dibujan todos |
 | Fila de grupo, clic izquierdo | Muestra u oculta todo el grupo |
 | Fila de grupo, clic derecho | Marca todo el grupo como hecho, otro clic derecho lo deshace |
 | `>` en una fila de grupo | Abre sus categorías debajo (un grupo a la vez) |
@@ -274,6 +275,18 @@ cada zoom. El ajuste del panel lo multiplica.
 
 ---
 
+### Aglomeración (Crowding)
+
+**Qué hace.** Mantiene legible un mapa concurrido. Donde los iconos se taparían entre sí, solo se dibuja el más importante y los demás se apartan hasta que te acercas.
+
+**Cómo funciona.** Dos iconos se solapan cuando en pantalla están más cerca que el lado de un icono. Los marcadores se toman por orden de importancia: los grupos en el orden del panel (Landmarks primero), los terminados al final. Un marcador que cae demasiado cerca de uno ya dibujado se aparta. El límite crece al alejarte, así que allí se apartan más iconos y vuelven al acercarte. Se calcula cuando el zoom se detiene, y de nuevo al cambiar un filtro o marcar algo.
+
+**Cómo se usa.** Haz clic en Smart u Off en la fila Crowding. Smart es lo predeterminado.
+
+**Límites.** Los iconos apartados no muestran nombre. Pon Crowding en Off para ver todos los marcadores.
+
+---
+
 ### Protección contra cierres
 
 **Qué hace.** Evita que un problema del mod se acumule y te dice dónde ocurrió.
@@ -304,6 +317,7 @@ falta editarlo.
 | `done` | `all`, `finished`, `ongoing` | `all` | La fila Show |
 | `style` | `faded`, `hidden` | `faded` | La fila Finished markers |
 | `size` | número, de `0.50` a `2.00` | `1.00` | La fila Icon size |
+| `thin` | `smart`, `off` | `smart` | La fila Crowding |
 | `offcat` | clave de categoría | ninguno | Una línea por categoría oculta |
 
 ### progress.txt
@@ -317,6 +331,11 @@ falta editarlo.
 Ambos archivos están en la carpeta del mod, `ue4ss\Mods\ValeSangoraMap`. Son texto plano.
 Edítalos solo con el juego cerrado, el mod los escribe mientras funciona. Haz copia de
 `progress.txt` para conservar tu progreso. Ninguno contiene datos de cuentas.
+
+Si Windows no deja al mod escribir en su propia carpeta (un juego instalado en Program Files, por
+ejemplo), el mod guarda sus archivos en `%LOCALAPPDATA%\Dawnwalker\Saved`, con nombres como
+`ValeSangora_progress.txt` y `ValeSangora_settings.txt`. Las primeras líneas de `vsm.log` indican qué
+carpeta se usa. Una vez que los archivos existen en un sitio, se quedan allí.
 
 ---
 
